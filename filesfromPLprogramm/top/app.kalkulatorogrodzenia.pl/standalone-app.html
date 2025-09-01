@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Kalkulator ogrodzeń - Joniec®</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="user-scalable=no">
+    <meta name="theme-color" content="#ffffff">
+    
+    <style>
+        /* Reset и базовые стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* Структура приложения */
+        #app {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+        }
+        
+        .col-panel {
+            width: 300px;
+            background: #ffffff;
+            border-right: 2px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .row-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .col-workspace {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 40%, #98FB98 70%, #8FBC8F 100%);
+        }
+        
+        /* Меню */
+        .menu {
+            display: flex;
+            gap: 3px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .menu button {
+            flex: 1;
+            padding: 8px 6px;
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .menu button:hover {
+            background: linear-gradient(135deg, #5a6268, #495057);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .menu button:active {
+            transform: translateY(0);
+        }
+        
+        /* Панель инструментов */
+        .toolbar-main {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            background: #ffffff;
+        }
+        
+        .toolbar-main > div {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .toolbar-main button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .toolbar-main button:hover {
+            background: linear-gradient(145deg, #e9ecef, #dee2e6);
+            border-color: #adb5bd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toolbar-main button:active {
+            transform: translateY(0);
+        }
+        
+        .toolbar-main button span {
+            width: 32px;
+            height: 32px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        /* Иконки инструментов (используем символы Unicode) */
+        .type-pole::after { content: "🏗️"; position: absolute; font-size: 24px; }
+        .type-curtain::after { content: "🧱"; position: absolute; font-size: 24px; }
+        .type-wicket::after { content: "🚪"; position: absolute; font-size: 24px; }
+        .type-gate::after { content: "🚧"; position: absolute; font-size: 24px; }
+        .type-space::after { content = "⏸️"; position: absolute; font-size: 24px; }
+        .type-episode::after { content: "📏"; position: absolute; font-size: 24px; }
+        
+        /* Панель проекта */
+        .toolbar-project {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            background: #f8f9fa;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .toolbar-project button {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(145deg, #ffffff, #f1f3f4);
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+        
+        .toolbar-project button:hover {
+            background: linear-gradient(145deg, #e9ecef, #dee2e6);
+            border-color: #adb5bd;
+        }
+        
+        /* Иконки проекта */
+        .type-colors-blocks::after { content: "🎨"; }
+        .type-colors-peaks::after { content: "🔴"; }
+        .type-combo::after { content: "⚙️"; }
+        .type-fencings::after { content: "🔧"; }
+        .type-average::after { content: "📐"; }
+        .type-move::after { content: "↔️"; }
+        .type-migration::after { content: "🔄"; }
+        .type-autosave::after { content: "💾"; }
+        .type-settings::after { content: "⚙️"; }
+        
+        /* Контент панели */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+        
+        .title h2 {
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .options-group {
+            margin-bottom: 20px;
+        }
+        
+        .options-group h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        .options-group input {
+            width: calc(100% - 40px);
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-right: 8px;
+            transition: all 0.2s;
+        }
+        
+        .options-group input:focus {
+            outline: none;
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+        }
+        
+        .options-group small {
+            color: #6c757d;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .content > button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #0d6efd, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+        }
+        
+        .content > button:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(13, 110, 253, 0.4);
+        }
+        
+        .content > button:active {
+            transform: translateY(0);
+        }
+        
+        /* Переключатель 2D/3D */
+        .row-switcher {
+            padding: 15px;
+            border-top: 1px solid #dee2e6;
+            background: #f8f9fa;
+        }
+        
+        .row-switcher button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
+        
+        .row-switcher button:hover {
+            background: linear-gradient(135deg, #20c997, #17a2b8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
+        }
+        
+        /* Рабочая область */
+        .row-workspace {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .canvas canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .zoom-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        /* Элементы управления в рабочей области */
+        .top-right {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 5;
+        }
+        
+        .bottom-left {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 5;
+        }
+        
+        .bottom-right {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 5;
+        }
+        
+        /* День/ночь переключатель */
+        .day-night {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .button-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .button-switch-handler {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* Кнопки изображений */
+        .button-image {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 20px;
+        }
+        
+        .button-image:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .button-image-type-environment::after { content: "🏞️"; }
+        .button-image-type-screenshot::after { content: "📷"; }
+        .button-image-type-details::after { content: "⚙️"; }
+        .button-image-type-window::after { content: "👁️"; }
+        
+        /* Кнопка "Wycena" */
+        .button-text {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .button-text:hover {
+            background: linear-gradient(135deg, #c82333, #a71e2a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
+        }
+        
+        .button-text:active {
+            transform: translateY(0);
+        }
+        
+        /* Анимации и эффекты */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            #app {
+                flex-direction: column;
+            }
+            
+            .col-panel {
+                width: 100%;
+                height: 40vh;
+                border-right: none;
+                border-bottom: 2px solid #dee2e6;
+            }
+            
+            .col-workspace {
+                height: 60vh;
+            }
+            
+            .toolbar-main > div {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 5px;
+            }
+            
+            .toolbar-main button {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .toolbar-project {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .toolbar-project button {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+        }
+        
+        /* Эффекты наведения */
+        .toolbar-main button:hover::before {
+            content: attr(title);
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+        
+        /* Статус бар */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 300px;
+            right: 0;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 12px;
+            z-index: 100;
+        }
+        
+        .status-bar span {
+            margin-right: 20px;
+        }
+        
+        /* Скрытые элементы для file input */
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="animate-in">
+        <!-- Левая панель -->
+        <div class="col-panel">
+            <section>
+                <div class="row-panel">
+                    <!-- Меню -->
+                    <section class="menu">
+                        <button title="Zapisz projekt (F9)" onclick="saveProject()">Zapisz</button>
+                        <button title="Usuń wszystkie słupki i przęsła" onclick="clearProject()">Wyczyść</button>
+                        <button title="Zmień system i zacznij projekt od nowa" onclick="resetProject()">Zresetuj</button>
+                        <button title="Wróć do listy projektów" onclick="closeProject()">Zamknij</button>
+                    </section>
+                    
+                    <!-- Панель инструментов -->
+                    <section class="toolbar-main">
+                        <div>
+                            <button title="Dodaj słupek" class="type-pole" onclick="addPole()">
+                                <span></span>
+                            </button>
+                            <button title="Dodaj mur" class="type-curtain" onclick="addPanel()">
+                                <span></span>
+                            </button>
+                            <button title="Dodaj furtkę" class="type-wicket" onclick="addWicket()">
+                                <span></span>
+                            </button>
+                            <button title="Dodaj bramę" class="type-gate" onclick="addGate()">
+                                <span></span>
+                            </button>
+                            <button title="Dodaj przerwę" class="type-space">
+                                <span></span>
+                            </button>
+                            <button title="Dodaj odcinek" class="type-episode" onclick="addSegment()">
+                                <span></span>
+                            </button>
+                        </div>
+                    </section>
+                    
+                    <!-- Панель проекта -->
+                    <section class="toolbar-project">
+                        <button title="Wybierz kolor bloczków" class="type-colors-blocks"></button>
+                        <button title="Wybierz kolor daszków" class="type-colors-peaks"></button>
+                        <button title="Konfiguruj kombo" class="type-combo"></button>
+                        <button title="Konfiguruj wypełnienia" class="type-fencings"></button>
+                        <button title="Rozłóż słupki równomiernie" class="type-average"></button>
+                        <button title="Blokada przenoszenia elementów" class="type-move"></button>
+                        <button title="Migruj projekt do innego systemu" class="type-migration"></button>
+                        <button title="Autozapis" class="type-autosave"></button>
+                        <button title="Ustawienia projektu" class="type-settings"></button>
+                    </section>
+                    
+                    <!-- Контент -->
+                    <div class="content">
+                        <div class="title">
+                            <h2>Dodaj odcinek</h2>
+                        </div>
+                        <div class="options-group">
+                            <h3>Długość</h3>
+                            <input type="number" min="0" step="0.01" id="distance" value="15.000">
+                            <small>m</small>
+                            
+                            <h3>Odległość między słupkami</h3>
+                            <input type="number" min="0" step="0.01" id="between" value="2.52">
+                            <small>m</small>
+                            
+                            <h3>Kąt</h3>
+                            <input type="number" min="-135" max="135" step="1" id="angle" value="0">
+                            <small>°</small>
+                        </div>
+                        <button onclick="addSegment()">Dodaj</button>
+                    </div>
+                </div>
+                
+                <!-- Переключатель 2D/3D -->
+                <div class="row-switcher">
+                    <button onclick="toggle2D3D()">2D/3D</button>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Рабочая область -->
+        <div class="col-workspace">
+            <section>
+                <div class="row-workspace">
+                    <!-- Canvas -->
+                    <div class="canvas">
+                        <canvas id="mainCanvas"></canvas>
+                        <div class="zoom-indicator" id="zoomIndicator">
+                            🔍 100%
+                        </div>
+                    </div>
+                    
+                    <!-- Элементы управления -->
+                    <div class="top-right">
+                        <!-- День/ночь -->
+                        <div class="day-night">
+                            <button title="Dzień / noc" class="button-switch" onclick="toggleDayNight()">
+                                <span class="button-switch-handler"></span>
+                            </button>
+                        </div>
+                        
+                        <!-- Фото фон -->
+                        <button title="Przymierz wizualizację na zdjęciu działki" class="button-image button-image-type-environment" onclick="document.getElementById('fileInput').click()"></button>
+                        <input type="file" id="fileInput" accept="image/*" onchange="loadBackgroundImage(this)">
+                        
+                        <!-- Скриншот -->
+                        <button title="Zrób print-screen" class="button-image button-image-type-screenshot" onclick="takeScreenshot()"></button>
+                    </div>
+                    
+                    <div class="bottom-left">
+                        <button title="Ustawienia grafiki" class="button-image button-image-type-details" onclick="openGraphicsSettings()"></button>
+                        <button title="Zmień widok" class="button-image button-image-type-window" onclick="changeView()"></button>
+                    </div>
+                    
+                    <div class="bottom-right">
+                        <button class="button-text" onclick="showPricing()">Wycena</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- Статус бар -->
+    <div class="status-bar">
+        <span id="statusElements">Elementy: 0</span>
+        <span id="statusLength">Długość: 0.00m</span>
+        <span id="statusCost">Koszt: 0 PLN</span>
+        <span id="statusMode">Tryb: 2D</span>
+    </div>
+
+    <script>
+        // Переменные проекта
+        let project = {
+            elements: [],
+            totalLength: 0,
+            poleCount: 0,
+            panelCount: 0,
+            gateCount: 0,
+            wicketCount: 0,
+            totalCost: 0
+        };
+        
+        let canvas, ctx;
+        let isDayMode = true;
+        let is3DMode = false;
+        let backgroundImage = null;
+        
+        // Переменные для зума
+        let zoom = 1;
+        let panX = 0;
+        let panY = 0;
+        
+        // Инициализация
+        function init() {
+            canvas = document.getElementById('mainCanvas');
+            if (canvas) {
+                ctx = canvas.getContext('2d');
+                setupCanvas();
+                updateZoomIndicator(); // Инициализируем индикатор зума
+                drawScene();
+                updateStatus();
+                
+                // Приветствие
+                setTimeout(() => {
+                    showMessage('Witaj w Kalkulatorze Ogrodzeń Joniec! 🏗️', 3000);
+                }, 1000);
+            }
+        }
+        
+        function setupCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            
+            window.addEventListener('resize', () => {
+                canvas.width = container.offsetWidth;
+                canvas.height = container.offsetHeight;
+                drawScene();
+            });
+            
+            // Mouse events для интерактивности
+            canvas.addEventListener('click', onCanvasClick);
+            canvas.addEventListener('mousemove', onCanvasMouseMove);
+            
+            // Добавляем обработчик колесика мыши для зума
+            canvas.addEventListener('wheel', onCanvasWheel, { passive: false });
+        }
+        
+        function drawScene() {
+            if (!ctx) return;
+            
+            // Очистка
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Фон (без трансформаций зума)
+            drawBackground();
+            
+            // Сохраняем контекст и применяем трансформации зума только для элементов
+            ctx.save();
+            ctx.translate(panX, panY);
+            ctx.scale(zoom, zoom);
+            
+            // Элементы ограждения
+            drawFenceElements();
+            
+            // Сетка
+            if (!is3DMode) {
+                drawGrid();
+            }
+            
+            // Восстанавливаем контекст
+            ctx.restore();
+            
+            // Информация (без трансформаций зума)
+            drawInfo();
+        }
+        
+        function drawBackground() {
+            if (backgroundImage) {
+                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+                return;
+            }
+            
+            // Градиент неба
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            if (isDayMode) {
+                gradient.addColorStop(0, '#87CEEB');
+                gradient.addColorStop(0.4, '#87CEEB');
+                gradient.addColorStop(0.7, '#98FB98');
+                gradient.addColorStop(1, '#8FBC8F');
+            } else {
+                gradient.addColorStop(0, '#2C3E50');
+                gradient.addColorStop(0.4, '#34495E');
+                gradient.addColorStop(0.7, '#1A252F');
+                gradient.addColorStop(1, '#0F1419');
+            }
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Логотипы Joniec
+            drawJoniecLogos();
+        }
+        
+        function drawJoniecLogos() {
+            const groundY = canvas.height * 0.8;
+            
+            ctx.fillStyle = isDayMode ? 'rgba(220, 38, 38, 0.1)' : 'rgba(52, 152, 219, 0.1)';
+            ctx.font = 'bold 28px Arial';
+            ctx.textAlign = 'center';
+            
+            for (let x = 150; x < canvas.width; x += 300) {
+                for (let y = groundY + 30; y < canvas.height; y += 120) {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(-0.2);
+                    ctx.fillText('JONIEC', 0, 0);
+                    ctx.restore();
+                }
+            }
+        }
+        
+        function drawGrid() {
+            ctx.strokeStyle = isDayMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            
+            const gridSize = 50;
+            
+            // Вертикальные линии
+            for (let x = 0; x <= canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            // Горизонтальные линии
+            for (let y = 0; y <= canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+        
+        function drawFenceElements() {
+            let currentX = 100;
+            const groundY = canvas.height * 0.75;
+            
+            project.elements.forEach((element, index) => {
+                const isSelected = element.selected;
+                
+                switch (element.type) {
+                    case 'pole':
+                        drawPole(currentX, groundY, isSelected);
+                        currentX += 10;
+                        break;
+                    case 'panel':
+                        drawPanel(currentX, groundY, element.length || 150, isSelected);
+                        currentX += element.length || 150;
+                        break;
+                    case 'gate':
+                        drawGate(currentX, groundY, isSelected);
+                        currentX += 120;
+                        break;
+                    case 'wicket':
+                        drawWicket(currentX, groundY, isSelected);
+                        currentX += 80;
+                        break;
+                }
+            });
+        }
+        
+        function drawPole(x, y, isSelected = false) {
+            // Тень
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(x + 5, y - 5, 15, 5);
+            
+            // Столб
+            ctx.fillStyle = isSelected ? '#FF6B6B' : '#8B4513';
+            ctx.fillRect(x - 10, y - 100, 20, 100);
+            
+            // Блик
+            ctx.fillStyle = isSelected ? '#FFD93D' : '#CD853F';
+            ctx.fillRect(x - 10, y - 100, 6, 100);
+            
+            // Верхушка
+            ctx.fillStyle = isSelected ? '#4ECDC4' : '#A0522D';
+            ctx.fillRect(x - 12, y - 105, 24, 8);
+            
+            if (isSelected) {
+                // Обводка
+                ctx.strokeStyle = '#FF1744';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(x - 12, y - 105, 24, 105);
+            }
+        }
+        
+        function drawPanel(x, y, length, isSelected = false) {
+            // Тень
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(x + 3, y - 3, length, 3);
+            
+            // Панель
+            ctx.fillStyle = isSelected ? '#FF6B6B' : '#708090';
+            ctx.fillRect(x, y - 80, length, 80);
+            
+            // Рамка
+            ctx.strokeStyle = isSelected ? '#FFD93D' : '#2F4F4F';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y - 80, length, 80);
+            
+            // Деления
+            const divisions = Math.floor(length / 30);
+            for (let i = 1; i < divisions; i++) {
+                ctx.beginPath();
+                ctx.moveTo(x + (length * i) / divisions, y - 80);
+                ctx.lineTo(x + (length * i) / divisions, y);
+                ctx.stroke();
+            }
+            
+            // Текстура
+            ctx.fillStyle = isSelected ? 'rgba(255, 215, 61, 0.3)' : 'rgba(255, 255, 255, 0.1)';
+            for (let i = 0; i < divisions; i++) {
+                const sectionX = x + (length * i) / divisions;
+                const sectionW = length / divisions;
+                ctx.fillRect(sectionX + 2, y - 78, sectionW - 4, 76);
+            }
+            
+            if (isSelected) {
+                // Обводка
+                ctx.strokeStyle = '#FF1744';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(x - 2, y - 82, length + 4, 84);
+            }
+        }
+        
+        function drawGate(x, y, isSelected = false) {
+            // Тень
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+            ctx.fillRect(x + 4, y - 4, 120, 4);
+            
+            // Левая створка
+            ctx.fillStyle = isSelected ? '#FF6B6B' : '#4682B4';
+            ctx.fillRect(x, y - 100, 58, 100);
+            
+            // Правая створка
+            ctx.fillRect(x + 62, y - 100, 58, 100);
+            
+            // Рамки створок
+            ctx.strokeStyle = isSelected ? '#FFD93D' : '#191970';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(x, y - 100, 58, 100);
+            ctx.strokeRect(x + 62, y - 100, 58, 100);
+            
+            // Ручки
+            ctx.fillStyle = isSelected ? '#4ECDC4' : '#FFD700';
+            ctx.beginPath();
+            ctx.arc(x + 45, y - 50, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x + 75, y - 50, 4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            if (isSelected) {
+                // Обводка
+                ctx.strokeStyle = '#FF1744';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(x - 2, y - 102, 124, 104);
+            }
+        }
+        
+        function drawWicket(x, y, isSelected = false) {
+            // Тень
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+            ctx.fillRect(x + 3, y - 3, 80, 3);
+            
+            // Калитка
+            ctx.fillStyle = isSelected ? '#FF6B6B' : '#8B0000';
+            ctx.fillRect(x, y - 85, 80, 85);
+            
+            // Рамка
+            ctx.strokeStyle = isSelected ? '#FFD93D' : '#4B0000';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y - 85, 80, 85);
+            
+            // Ручка
+            ctx.fillStyle = isSelected ? '#4ECDC4' : '#FFD700';
+            ctx.beginPath();
+            ctx.arc(x + 65, y - 42, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Декоративная решетка
+            ctx.strokeStyle = isSelected ? 'rgba(255, 215, 61, 0.7)' : 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            for (let i = 1; i < 4; i++) {
+                ctx.beginPath();
+                ctx.moveTo(x + 10, y - 85 + (85 * i) / 4);
+                ctx.lineTo(x + 70, y - 85 + (85 * i) / 4);
+                ctx.stroke();
+            }
+            
+            if (isSelected) {
+                // Обводка
+                ctx.strokeStyle = '#FF1744';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(x - 2, y - 87, 84, 89);
+            }
+        }
+        
+        function drawInfo() {
+            if (project.elements.length === 0) {
+                ctx.fillStyle = isDayMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.8)';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Kliknij narzędzia, aby dodać elementy ogrodzenia', canvas.width / 2, canvas.height / 2);
+                
+                ctx.font = '16px Arial';
+                ctx.fillText('🏗️ Słupek  🧱 Panel  🚪 Furtka  🚧 Brama', canvas.width / 2, canvas.height / 2 + 40);
+            }
+        }
+        
+        // Функции добавления элементов
+        function addSegment() {
+            const distance = parseFloat(document.getElementById('distance').value) || 15;
+            const between = parseFloat(document.getElementById('between').value) || 2.5;
+            const angle = parseFloat(document.getElementById('angle').value) || 0;
+            
+            const segmentLength = distance * 10; // Масштаб для отображения
+            
+            const segment = {
+                type: 'panel',
+                length: segmentLength,
+                realLength: distance,
+                angle: angle,
+                id: Date.now(),
+                selected: false
+            };
+            
+            project.elements.push(segment);
+            project.panelCount++;
+            project.totalLength += distance;
+            
+            // Добавляем столб в конце
+            const pole = {
+                type: 'pole',
+                id: Date.now() + 1,
+                selected: false
+            };
+            project.elements.push(pole);
+            project.poleCount++;
+            
+            updateCalculations();
+            drawScene();
+            updateStatus();
+            showMessage(`Dodano odcinek ${distance}m`, 2000);
+        }
+        
+        function addPole() {
+            const pole = {
+                type: 'pole',
+                id: Date.now(),
+                selected: false
+            };
+            project.elements.push(pole);
+            project.poleCount++;
+            
+            updateCalculations();
+            drawScene();
+            updateStatus();
+            showMessage('Dodano słupek', 1500);
+        }
+        
+        function addPanel() {
+            const between = parseFloat(document.getElementById('between').value) || 2.5;
+            const panel = {
+                type: 'panel',
+                length: between * 40,
+                realLength: between,
+                id: Date.now(),
+                selected: false
+            };
+            project.elements.push(panel);
+            project.panelCount++;
+            project.totalLength += between;
+            
+            updateCalculations();
+            drawScene();
+            updateStatus();
+            showMessage(`Dodano panel ${between}m`, 1500);
+        }
+        
+        function addGate() {
+            const gate = {
+                type: 'gate',
+                id: Date.now(),
+                selected: false
+            };
+            project.elements.push(gate);
+            project.gateCount++;
+            project.totalLength += 4.0;
+            
+            updateCalculations();
+            drawScene();
+            updateStatus();
+            showMessage('Dodano bramę', 1500);
+        }
+        
+        function addWicket() {
+            const wicket = {
+                type: 'wicket',
+                id: Date.now(),
+                selected: false
+            };
+            project.elements.push(wicket);
+            project.wicketCount++;
+            project.totalLength += 1.5;
+            
+            updateCalculations();
+            drawScene();
+            updateStatus();
+            showMessage('Dodano furtkę', 1500);
+        }
+        
+        // Обновление расчетов
+        function updateCalculations() {
+            const poleCost = 150;      // PLN за столб
+            const panelCost = 80;      // PLN за м2 панели
+            const gateCost = 800;      // PLN за ворота
+            const wicketCost = 400;    // PLN за калитку
+            
+            project.totalCost = 
+                (project.poleCount * poleCost) +
+                (project.totalLength * panelCost) +
+                (project.gateCount * gateCost) +
+                (project.wicketCount * wicketCost);
+        }
+        
+        // Обновление статус бара
+        function updateStatus() {
+            document.getElementById('statusElements').textContent = `Elementy: ${project.elements.length}`;
+            document.getElementById('statusLength').textContent = `Długość: ${project.totalLength.toFixed(2)}m`;
+            document.getElementById('statusCost').textContent = `Koszt: ${project.totalCost.toFixed(0)} PLN`;
+            document.getElementById('statusMode').textContent = `Tryb: ${is3DMode ? '3D' : '2D'}`;
+        }
+        
+        // События мыши
+        function onCanvasClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // Проверяем клик по элементам
+            let clickedElement = null;
+            let currentX = 100;
+            const groundY = canvas.height * 0.75;
+            
+            project.elements.forEach((element, index) => {
+                let elementWidth = 0;
+                
+                switch (element.type) {
+                    case 'pole':
+                        elementWidth = 20;
+                        if (x >= currentX - 10 && x <= currentX + 10 && y >= groundY - 100 && y <= groundY) {
+                            clickedElement = element;
+                        }
+                        currentX += 10;
+                        break;
+                    case 'panel':
+                        elementWidth = element.length || 150;
+                        if (x >= currentX && x <= currentX + elementWidth && y >= groundY - 80 && y <= groundY) {
+                            clickedElement = element;
+                        }
+                        currentX += elementWidth;
+                        break;
+                    case 'gate':
+                        elementWidth = 120;
+                        if (x >= currentX && x <= currentX + elementWidth && y >= groundY - 100 && y <= groundY) {
+                            clickedElement = element;
+                        }
+                        currentX += elementWidth;
+                        break;
+                    case 'wicket':
+                        elementWidth = 80;
+                        if (x >= currentX && x <= currentX + elementWidth && y >= groundY - 85 && y <= groundY) {
+                            clickedElement = element;
+                        }
+                        currentX += elementWidth;
+                        break;
+                }
+            });
+            
+            // Сбрасываем выделение
+            project.elements.forEach(el => el.selected = false);
+            
+            // Выделяем кликнутый элемент
+            if (clickedElement) {
+                clickedElement.selected = true;
+                showMessage(`Zaznaczono: ${clickedElement.type}`, 1500);
+            }
+            
+            drawScene();
+        }
+        
+        function onCanvasMouseMove(event) {
+            canvas.style.cursor = 'crosshair';
+        }
+        
+        // Обработчик колесика мыши для зума
+        function onCanvasWheel(event) {
+            event.preventDefault();
+            console.log('Zoom event triggered, current zoom:', zoom);
+            
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            
+            // Коэффициент зума
+            const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+            const newZoom = Math.max(0.1, Math.min(5.0, zoom * zoomFactor));
+            
+            // Вычисляем точку зума в координатах canvas
+            const worldX = (mouseX - panX) / zoom;
+            const worldY = (mouseY - panY) / zoom;
+            
+            // Обновляем зум
+            zoom = newZoom;
+            
+            // Корректируем панорамирование для зума относительно курсора мыши
+            panX = mouseX - worldX * zoom;
+            panY = mouseY - worldY * zoom;
+            
+            console.log('New zoom:', zoom, 'panX:', panX, 'panY:', panY);
+            
+            // Обновляем индикатор и перерисовываем
+            updateZoomIndicator();
+            drawScene();
+        }
+        
+        // Обновление индикатора зума
+        function updateZoomIndicator() {
+            const zoomPercentage = Math.round(zoom * 100);
+            document.getElementById('zoomIndicator').textContent = `🔍 ${zoomPercentage}%`;
+        }
+        
+        // Функции управления
+        function saveProject() {
+            const projectData = {
+                ...project,
+                timestamp: new Date().toISOString(),
+                version: '2.0',
+                system: 'Joniec Enhanced'
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `projekt-joniec-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showMessage('Projekt został zapisany! 💾', 2500);
+        }
+        
+        function clearProject() {
+            if (project.elements.length === 0) {
+                showMessage('Projekt jest już pusty', 1500);
+                return;
+            }
+            
+            if (confirm('Czy na pewno chcesz usunąć wszystkie elementy?')) {
+                project = {
+                    elements: [],
+                    totalLength: 0,
+                    poleCount: 0,
+                    panelCount: 0,
+                    gateCount: 0,
+                    wicketCount: 0,
+                    totalCost: 0
+                };
+                drawScene();
+                updateStatus();
+                showMessage('Projekt wyczyszczony! 🧹', 2000);
+            }
+        }
+        
+        function resetProject() {
+            if (confirm('Czy na pewno chcesz zresetować projekt i ustawienia?')) {
+                document.getElementById('distance').value = 15;
+                document.getElementById('between').value = 2.52;
+                document.getElementById('angle').value = 0;
+                clearProject();
+                showMessage('Projekt zresetowany! 🔄', 2000);
+            }
+        }
+        
+        function closeProject() {
+            if (confirm('Czy na pewno chcesz zamknąć projekt?')) {
+                showMessage('Zamykanie projektu... 👋', 2000);
+                setTimeout(() => {
+                    window.close();
+                }, 2000);
+            }
+        }
+        
+        function toggle2D3D() {
+            is3DMode = !is3DMode;
+            const button = document.querySelector('.row-switcher button');
+            button.textContent = is3DMode ? '3D ✓' : '2D/3D';
+            button.style.background = is3DMode ? 
+                'linear-gradient(135deg, #17a2b8, #138496)' : 
+                'linear-gradient(135deg, #28a745, #20c997)';
+            
+            drawScene();
+            updateStatus();
+            showMessage(`Przełączono na tryb ${is3DMode ? '3D' : '2D'}`, 1500);
+        }
+        
+        function toggleDayNight() {
+            isDayMode = !isDayMode;
+            const handler = document.querySelector('.button-switch-handler');
+            
+            if (isDayMode) {
+                handler.style.transform = 'translateX(0px)';
+                handler.style.background = 'linear-gradient(145deg, #FFD700, #FFA500)';
+            } else {
+                handler.style.transform = 'translateX(30px)';
+                handler.style.background = 'linear-gradient(145deg, #4A90E2, #357ABD)';
+            }
+            
+            drawScene();
+            showMessage(isDayMode ? 'Tryb dzienny ☀️' : 'Tryb nocny 🌙', 1500);
+        }
+        
+        function showPricing() {
+            updateCalculations();
+            
+            let pricing = '💰 WYCENA PROJEKTU JONIEC\n\n';
+            pricing += '📊 ELEMENTY:\n';
+            if (project.poleCount > 0) pricing += `🏗️ Słupki: ${project.poleCount} szt. × 150 PLN = ${project.poleCount * 150} PLN\n`;
+            if (project.panelCount > 0) pricing += `🧱 Panele: ${project.totalLength.toFixed(1)}m × 80 PLN/m = ${(project.totalLength * 80).toFixed(0)} PLN\n`;
+            if (project.gateCount > 0) pricing += `🚧 Bramy: ${project.gateCount} szt. × 800 PLN = ${project.gateCount * 800} PLN\n`;
+            if (project.wicketCount > 0) pricing += `🚪 Furtki: ${project.wicketCount} szt. × 400 PLN = ${project.wicketCount * 400} PLN\n`;
+            
+            pricing += `\n📏 Długość całkowita: ${project.totalLength.toFixed(1)}m`;
+            pricing += `\n💵 SUMA: ${project.totalCost.toFixed(0)} PLN`;
+            pricing += `\n\n📞 Skontaktuj się z nami:\n🌐 www.joniec.pl\n📧 info@joniec.pl\n☎️ +48 123 456 789`;
+            
+            alert(pricing);
+        }
+        
+        function takeScreenshot() {
+            const link = document.createElement('a');
+            link.download = `joniec-projekt-${new Date().toISOString().split('T')[0]}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            showMessage('Zrzut ekranu zapisany! 📷', 2000);
+        }
+        
+        function loadBackgroundImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        backgroundImage = img;
+                        drawScene();
+                        showMessage(`Załadowano tło: ${input.files[0].name} 🏞️`, 2500);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        function openGraphicsSettings() {
+            const settings = prompt(
+                'USTAWIENIA GRAFIKI:\n\n' +
+                '1. Usuń tło (wpisz: "clear")\n' +
+                '2. Zmień jakość (wpisz: "high" lub "low")\n' +
+                '3. Reset widoku (wpisz: "reset")\n\n' +
+                'Co chcesz zrobić?'
+            );
+            
+            if (settings) {
+                switch(settings.toLowerCase()) {
+                    case 'clear':
+                        backgroundImage = null;
+                        drawScene();
+                        showMessage('Tło usunięte', 1500);
+                        break;
+                    case 'high':
+                        canvas.style.imageRendering = 'auto';
+                        showMessage('Wysoka jakość', 1500);
+                        break;
+                    case 'low':
+                        canvas.style.imageRendering = 'pixelated';
+                        showMessage('Niska jakość', 1500);
+                        break;
+                    case 'reset':
+                        canvas.style.imageRendering = 'auto';
+                        backgroundImage = null;
+                        drawScene();
+                        showMessage('Reset widoku', 1500);
+                        break;
+                    default:
+                        showMessage('Nieznana komenda', 1500);
+                }
+            }
+        }
+        
+        function changeView() {
+            const views = ['Standard', 'Panorama', 'Detail', 'Technical'];
+            const currentView = localStorage.getItem('currentView') || 'Standard';
+            const currentIndex = views.indexOf(currentView);
+            const nextIndex = (currentIndex + 1) % views.length;
+            const nextView = views[nextIndex];
+            
+            localStorage.setItem('currentView', nextView);
+            
+            // Применяем эффект смены вида
+            canvas.style.filter = 'brightness(1.2) contrast(1.1)';
+            setTimeout(() => {
+                canvas.style.filter = 'none';
+            }, 300);
+            
+            showMessage(`Widok: ${nextView} 👁️`, 1500);
+        }
+        
+        // Вспомогательные функции
+        function showMessage(text, duration = 2000) {
+            // Создаем временное уведомление
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 500;
+                z-index: 10000;
+                animation: fadeInOut ${duration}ms ease-in-out;
+                text-align: center;
+                max-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            
+            message.textContent = text;
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                if (message.parentNode) {
+                    message.parentNode.removeChild(message);
+                }
+            }, duration);
+        }
+        
+        // Горячие клавиши
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'F9':
+                    e.preventDefault();
+                    saveProject();
+                    break;
+                case 'Delete':
+                case 'Backspace':
+                    // Удаляем выделенный элемент
+                    const selectedIndex = project.elements.findIndex(el => el.selected);
+                    if (selectedIndex !== -1) {
+                        const element = project.elements[selectedIndex];
+                        project.elements.splice(selectedIndex, 1);
+                        
+                        // Обновляем счетчики
+                        switch(element.type) {
+                            case 'pole': project.poleCount--; break;
+                            case 'panel': 
+                                project.panelCount--; 
+                                project.totalLength -= element.realLength || 0;
+                                break;
+                            case 'gate': 
+                                project.gateCount--; 
+                                project.totalLength -= 4.0;
+                                break;
+                            case 'wicket': 
+                                project.wicketCount--; 
+                                project.totalLength -= 1.5;
+                                break;
+                        }
+                        
+                        updateCalculations();
+                        drawScene();
+                        updateStatus();
+                        showMessage(`Usunięto ${element.type}`, 1500);
+                    }
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    toggle2D3D();
+                    break;
+                case 'Escape':
+                    // Снимаем выделение
+                    project.elements.forEach(el => el.selected = false);
+                    drawScene();
+                    break;
+            }
+        });
+        
+        // Добавляем CSS для анимации
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Инициализация при загрузке
+        window.addEventListener('load', function() {
+            init();
+        });
+    </script>
+</body>
+</html>
+

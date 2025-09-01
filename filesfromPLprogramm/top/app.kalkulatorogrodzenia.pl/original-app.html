@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html class="">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalkulator ogrodzeń - Joniec®</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="user-scalable=no">
+    <meta name="theme-color" content="#ffffff">
+    <link href="assets/img/favicon.png" rel="shortcut icon">
+    <link href="app/prod/build/static/css/main.3189d60c.chunk.css" rel="stylesheet">
+    
+    <style>
+        .reset-css {
+            border: 0;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            width: auto;
+            height: auto;
+            font-size: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            text-align: left;
+            vertical-align: middle;
+        }
+        
+        /* Основные стили приложения */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: #f0f2f5;
+            overflow: hidden;
+        }
+        
+        #app {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Контейнер приложения */
+        #templates-project-template {
+            width: 100%;
+            height: 100%;
+        }
+        
+        #container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+        
+        #application {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+        
+        /* Левая панель */
+        .col-panel {
+            width: 300px;
+            background: #ffffff;
+            border-right: 1px solid #e1e5e9;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .row-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Меню */
+        .menu {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .menu button {
+            flex: 1;
+            padding: 8px 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .menu button:hover {
+            background: #5a6268;
+        }
+        
+        /* Панель инструментов */
+        .toolbar-main {
+            padding: 15px 10px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .toolbar-main > div {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .toolbar-main button {
+            width: 50px;
+            height: 50px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .toolbar-main button:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .toolbar-main button span {
+            width: 24px;
+            height: 24px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        /* Иконки инструментов */
+        .type-pole span { background-image: url('assets/icons/toolbar-main/pole.png'); }
+        .type-curtain span { background-image: url('assets/icons/toolbar-main/curtain.png'); }
+        .type-wicket span { background-image: url('assets/icons/toolbar-main/wicket.png'); }
+        .type-gate span { background-image: url('assets/icons/toolbar-main/gate.png'); }
+        .type-space span { background-image: url('assets/icons/toolbar-main/space.png'); }
+        .type-episode span { background-image: url('assets/icons/toolbar-main/episode.png'); }
+        
+        /* Панель проекта */
+        .toolbar-project {
+            padding: 10px;
+            border-bottom: 1px solid #e1e5e9;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        
+        .toolbar-project button {
+            width: 40px;
+            height: 40px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .toolbar-project button span {
+            width: 20px;
+            height: 20px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        /* Иконки проекта */
+        .type-colors-blocks span { background-image: url('assets/icons/toolbar-project/colors-blocks.png'); }
+        .type-colors-peaks span { background-image: url('assets/icons/toolbar-project/colors-peaks.png'); }
+        .type-combo span { background-image: url('assets/icons/toolbar-project/combo.png'); }
+        .type-fencings span { background-image: url('assets/icons/toolbar-project/fencings.png'); }
+        .type-average span { background-image: url('assets/icons/toolbar-project/average.png'); }
+        .type-move span { background-image: url('assets/icons/toolbar-project/move-enabled.png'); }
+        .type-migration span { background-image: url('assets/icons/toolbar-project/migration.png'); }
+        .type-autosave span { background-image: url('assets/icons/toolbar-project/autosave-disabled.png'); }
+        .type-settings span { background-image: url('assets/icons/toolbar-project/settings.png'); }
+        
+        /* Контент панели */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .title h2 {
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .options-group {
+            margin-bottom: 25px;
+        }
+        
+        .options-group h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .options-group input {
+            width: calc(100% - 40px);
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-right: 8px;
+        }
+        
+        .options-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .options-group small {
+            color: #6b7280;
+            font-size: 12px;
+        }
+        
+        .content > button {
+            width: 100%;
+            padding: 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .content > button:hover {
+            background: #2563eb;
+        }
+        
+        /* Переключатель 2D/3D */
+        .row-switcher {
+            padding: 15px;
+            border-top: 1px solid #e1e5e9;
+        }
+        
+        .row-switcher button {
+            width: 100%;
+            padding: 10px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .row-switcher button:hover {
+            background: #5a6268;
+        }
+        
+        /* Рабочая область */
+        .col-workspace {
+            flex: 1;
+            position: relative;
+        }
+        
+        .row-workspace {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .canvas {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 30%, #8FBC8F 100%);
+            position: relative;
+        }
+        
+        .canvas canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .canvas-helper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        /* Элементы управления */
+        .top-left,
+        .top-right,
+        .bottom-left,
+        .bottom-right {
+            position: absolute;
+            z-index: 10;
+        }
+        
+        .top-right {
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .bottom-left {
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .bottom-right {
+            bottom: 20px;
+            right: 20px;
+        }
+        
+        /* День/ночь переключатель */
+        .day-night {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 5px;
+        }
+        
+        .button-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+        
+        .button-switch-handler {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* Кнопки изображений */
+        .button-image {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .button-image:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Кнопка "Wycena" */
+        .button-text {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .button-text:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+        
+        /* Коммуникации */
+        .communique {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        
+        /* Фон фото */
+        .photo-background input[type="file"] {
+            display: none;
+        }
+        
+        /* Скрыть контент helper canvas */
+        .canvas-helper canvas {
+            opacity: 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .col-panel {
+                width: 100%;
+                height: 300px;
+            }
+            
+            #application {
+                flex-direction: column;
+            }
+            
+            .toolbar-main > div {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            
+            .toolbar-project {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <noscript>Włącz JavaScript, aby uruchomić aplikację.</noscript>
+    
+    <div id="app">
+        <div id="templates-project-template">
+            <div id="container">
+                <div id="application" class="grid window-none">
+                    <!-- Левая панель -->
+                    <div class="col-panel">
+                        <section>
+                            <div class="row-panel">
+                                <!-- Меню -->
+                                <section class="menu">
+                                    <button title="Zapisz projekt (F9)" onclick="saveProject()">Zapisz</button>
+                                    <button title="Usuń wszystkie słupki i przęsła" onclick="clearProject()">Wyczyść</button>
+                                    <button title="Zmień system i zacznij projekt od nowa" onclick="resetProject()">Zresetuj</button>
+                                    <button title="Wróć do listy projektów" onclick="closeProject()">Zamknij</button>
+                                </section>
+                                
+                                <!-- Панель инструментов -->
+                                <section class="toolbar-main">
+                                    <div>
+                                        <button title="Dodaj słupek" aria-label="Dodaj słupek" class="type-pole" onclick="addPole()">
+                                            <span></span>
+                                        </button>
+                                        <button title="Dodaj mur" aria-label="Dodaj mur" class="type-curtain" onclick="addPanel()">
+                                            <span></span>
+                                        </button>
+                                        <button title="Dodaj furtkę" aria-label="Dodaj furtkę" class="type-wicket" onclick="addWicket()">
+                                            <span></span>
+                                        </button>
+                                        <button title="Dodaj bramę" aria-label="Dodaj bramę" class="type-gate" onclick="addGate()">
+                                            <span></span>
+                                        </button>
+                                        <button title="Dodaj przerwę" aria-label="Dodaj przerwę" class="type-space">
+                                            <span></span>
+                                        </button>
+                                        <button title="Dodaj odcinek" aria-label="Dodaj odcinek" class="type-episode" onclick="addSegment()">
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                </section>
+                                
+                                <!-- Панель проекта -->
+                                <section class="toolbar-project">
+                                    <button title="Wybierz kolor bloczków" aria-label="Wybierz kolor bloczków" class="type-colors-blocks">
+                                        <span></span>
+                                    </button>
+                                    <button title="Wybierz kolor daszków" aria-label="Wybierz kolor daszków" class="type-colors-peaks">
+                                        <span></span>
+                                    </button>
+                                    <button title="Konfiguruj kombo" aria-label="Konfiguruj kombo" class="type-combo">
+                                        <span></span>
+                                    </button>
+                                    <button title="Konfiguruj wypełnienia" aria-label="Konfiguruj wypełnienia" class="type-fencings">
+                                        <span></span>
+                                    </button>
+                                    <button title="Rozłóż słupki równomiernie" aria-label="Rozłóż słupki równomiernie" class="type-average">
+                                        <span></span>
+                                    </button>
+                                    <button title="Blokada przenoszenia elementów" aria-label="Blokada przenoszenia elementów" class="type-move enabled">
+                                        <span></span>
+                                    </button>
+                                    <button title="Migruj projekt do innego systemu" aria-label="Migruj projekt do innego systemu" class="type-migration">
+                                        <span></span>
+                                    </button>
+                                    <button title="Autozapis" aria-label="Autozapis" class="type-autosave">
+                                        <span></span>
+                                    </button>
+                                    <button title="Ustawienia projektu" aria-label="Ustawienia projektu" class="type-settings">
+                                        <span></span>
+                                    </button>
+                                </section>
+                                
+                                <!-- Контент -->
+                                <div class="content">
+                                    <div class="title">
+                                        <h2>Dodaj odcinek</h2>
+                                    </div>
+                                    <div class="options-group">
+                                        <h3>Długość</h3>
+                                        <input type="number" min="0" step="0.01" name="distance" id="distance" value="15.000">
+                                        <small>m</small>
+                                        
+                                        <h3>Odległość między słupkami</h3>
+                                        <input type="number" min="0" step="0.01" name="between" id="between" value="2.52">
+                                        <small>m</small>
+                                        
+                                        <h3>Kąt</h3>
+                                        <input type="number" min="-135" max="135" step="1" name="angle" id="angle" value="0">
+                                        <small>°</small>
+                                    </div>
+                                    <button onclick="addSegment()">Dodaj</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Переключатель 2D/3D -->
+                            <div class="row-switcher">
+                                <button onclick="toggle2D3D()">2D/3D</button>
+                            </div>
+                        </section>
+                    </div>
+                    
+                    <!-- Рабочая область -->
+                    <div class="col-workspace">
+                        <section>
+                            <div class="row-workspace">
+                                <!-- Canvas -->
+                                <div class="canvas">
+                                    <canvas id="mainCanvas" width="866" height="1313" style="width: 866px; height: 1313px; touch-action: none; cursor: inherit;" tabindex="0"></canvas>
+                                </div>
+                                
+                                <!-- Helper canvas -->
+                                <div class="canvas-helper">
+                                    <canvas width="0" height="0" style="width: 0px; height: 0px; touch-action: none; cursor: inherit;" tabindex="0"></canvas>
+                                </div>
+                                
+                                <!-- Элементы управления -->
+                                <div class="top-left"></div>
+                                
+                                <div class="top-right">
+                                    <!-- День/ночь -->
+                                    <div class="day-night p-1">
+                                        <button title="Dzień / noc" aria-label="Dzień / noc" class="button-switch" onclick="toggleDayNight()">
+                                            <span class="button-switch-handler" style="top: 0%;"></span>
+                                            <span class="button-switch-type-day"></span>
+                                            <span class="button-switch-type-night"></span>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Фото фон -->
+                                    <div class="photo-background">
+                                        <button title="Przymierz wizualizację na zdjęciu działki" aria-label="Przymierz wizualizację na zdjęciu działki" class="button-image button-image-type-environment" style="opacity: 1; order: 1;"></button>
+                                        <div class="content">
+                                            <input type="file" accept="image/*" onchange="loadBackgroundImage(this)">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Скриншот -->
+                                    <div>
+                                        <button title="Zrób print-screen" aria-label="Zrób print-screen" class="button-image button-image-type-screenshot" style="opacity: 1; order: 1;" onclick="takeScreenshot()"></button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bottom-left">
+                                    <button title="Ustawienia grafiki" aria-label="Ustawienia grafiki" class="button-image button-image-type-details" style="opacity: 1; order: 2;" onclick="openGraphicsSettings()"></button>
+                                    <button title="Zmień widok" aria-label="Zmień widok" class="button-image button-image-type-window" style="opacity: 1; order: 1;" onclick="changeView()"></button>
+                                </div>
+                                
+                                <div class="bottom-right">
+                                    <div class="p-2">
+                                        <button class="button-text" onclick="showPricing()">Wycena</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Коммуникации -->
+                                <div class="communique">
+                                    <div></div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webpack loader script (из оригинала) -->
+    <script>
+        !function(e){function r(r){for(var n,l,a=r[0],i=r[1],f=r[2],p=0,s=[];p<a.length;p++)l=a[p],Object.prototype.hasOwnProperty.call(o,l)&&o[l]&&s.push(o[l][0]),o[l]=0;for(n in i)Object.prototype.hasOwnProperty.call(i,n)&&(e[n]=i[n]);for(c&&c(r);s.length;)s.shift()();return u.push.apply(u,f||[]),t()}function t(){for(var e,r=0;r<u.length;r++){for(var t=u[r],n=!0,a=1;a<t.length;a++){var i=t[a];0!==o[i]&&(n=!1)}n&&(u.splice(r--,1),e=l(l.s=t[0]))}return e}var n={},o={1:0},u=[];function l(r){if(n[r])return n[r].exports;var t=n[r]={i:r,l:!1,exports:{}};return e[r].call(t.exports,t,t.exports,l),t.l=!0,t.exports}l.m=e,l.c=n,l.d=function(e,r,t){l.o(e,r)||Object.defineProperty(e,r,{enumerable:!0,get:t})},l.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},l.t=function(e,r){if(1&r&&(e=l(e)),8&r)return e;if(4&r&&"object"==typeof e&&e&&e.__esModule)return e;var t=Object.create(null);if(l.r(t),Object.defineProperty(t,"default",{enumerable:!0,value:e}),2&r&&"string"!=typeof e)for(var n in e)l.d(t,n,function(r){return e[r]}.bind(null,n));return t},l.n=function(e){var r=e&&e.__esModule?function(){return e.default}:function(){return e};return l.d(r,"a",r),r},l.o=function(e,r){return Object.prototype.hasOwnProperty.call(e,r)},l.p="/";var a=this["webpackJsonpjoniec-kalkulator"]=this["webpackJsonpjoniec-kalkulator"]||[],i=a.push.bind(a);a.push=r,a=a.slice();for(var f=0;f<a.length;f++)r(a[f]);var c=i;t()}([])
+    </script>
+    
+    <!-- Основные chunk файлы -->
+    <script src="app/prod/build/static/js/2.4b869d18.chunk.js"></script>
+    <script src="app/prod/build/static/js/main.f98c1ea0.chunk.js"></script>
+    
+    <!-- Наш JavaScript для функциональности -->
+    <script>
+        // Переменные проекта
+        let project = {
+            elements: [],
+            totalLength: 0,
+            poleCount: 0,
+            panelCount: 0,
+            gateCount: 0,
+            wicketCount: 0,
+            totalCost: 0
+        };
+        
+        let canvas, ctx;
+        let isDayMode = true;
+        let is3DMode = false;
+        
+        // Инициализация
+        function init() {
+            canvas = document.getElementById('mainCanvas');
+            if (canvas) {
+                ctx = canvas.getContext('2d');
+                setupCanvas();
+                drawScene();
+            }
+        }
+        
+        function setupCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            window.addEventListener('resize', () => {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                drawScene();
+            });
+        }
+        
+        function drawScene() {
+            if (!ctx) return;
+            
+            // Очистка
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Рисуем базовую сцену
+            drawEnvironment();
+            drawFenceElements();
+        }
+        
+        function drawEnvironment() {
+            // Небо уже задано через CSS градиент
+            
+            // Земля/пол
+            const groundY = canvas.height * 0.7;
+            
+            // Логотипы Joniec на полу
+            ctx.fillStyle = 'rgba(220, 38, 38, 0.15)';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            
+            for (let x = 100; x < canvas.width; x += 250) {
+                for (let y = groundY + 50; y < canvas.height; y += 150) {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(-0.3);
+                    ctx.fillText('JONIEC', 0, 0);
+                    ctx.restore();
+                }
+            }
+            
+            // Базовые столбы фундамента
+            drawFoundationPosts(groundY);
+        }
+        
+        function drawFoundationPosts(groundY) {
+            const posts = [
+                { x: canvas.width * 0.25, width: 50 },
+                { x: canvas.width * 0.5, width: 50 },
+                { x: canvas.width * 0.75, width: 50 }
+            ];
+            
+            posts.forEach(post => {
+                // Фундамент
+                ctx.fillStyle = '#bdc3c7';
+                ctx.fillRect(post.x - post.width/2, groundY, post.width, 40);
+                
+                // Столб
+                ctx.fillStyle = '#95a5a6';
+                ctx.fillRect(post.x - 10, groundY - 80, 20, 80);
+                
+                // Тень
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.fillRect(post.x + 10, groundY - 70, 5, 70);
+            });
+        }
+        
+        function drawFenceElements() {
+            let currentX = 80;
+            const groundY = canvas.height * 0.7;
+            
+            project.elements.forEach((element) => {
+                switch (element.type) {
+                    case 'pole':
+                        drawPole(currentX, groundY);
+                        currentX += 5;
+                        break;
+                    case 'panel':
+                        drawPanel(currentX, groundY, element.length || 120);
+                        currentX += element.length || 120;
+                        break;
+                    case 'gate':
+                        drawGate(currentX, groundY);
+                        currentX += 100;
+                        break;
+                    case 'wicket':
+                        drawWicket(currentX, groundY);
+                        currentX += 60;
+                        break;
+                }
+            });
+        }
+        
+        function drawPole(x, y) {
+            // Столб
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(x - 8, y - 80, 16, 80);
+            
+            // Блик
+            ctx.fillStyle = '#A0522D';
+            ctx.fillRect(x - 8, y - 80, 5, 80);
+            
+            // Тень
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.fillRect(x + 8, y - 70, 4, 70);
+        }
+        
+        function drawPanel(x, y, length) {
+            // Панель
+            ctx.fillStyle = '#696969';
+            ctx.fillRect(x, y - 60, length, 60);
+            
+            // Рамка
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y - 60, length, 60);
+            
+            // Деления
+            for (let i = 1; i < 4; i++) {
+                ctx.beginPath();
+                ctx.moveTo(x + (length * i) / 4, y - 60);
+                ctx.lineTo(x + (length * i) / 4, y);
+                ctx.stroke();
+            }
+        }
+        
+        function drawGate(x, y) {
+            // Ворота
+            ctx.fillStyle = '#2F4F4F';
+            ctx.fillRect(x, y - 80, 100, 80);
+            
+            // Рамка
+            ctx.strokeStyle = '#1a2f2f';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(x, y - 80, 100, 80);
+            
+            // Разделение створок
+            ctx.beginPath();
+            ctx.moveTo(x + 50, y - 80);
+            ctx.lineTo(x + 50, y);
+            ctx.stroke();
+        }
+        
+        function drawWicket(x, y) {
+            // Калитка
+            ctx.fillStyle = '#8B0000';
+            ctx.fillRect(x, y - 65, 60, 65);
+            
+            // Рамка
+            ctx.strokeStyle = '#660000';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y - 65, 60, 65);
+        }
+        
+        // Функции добавления элементов
+        function addSegment() {
+            const distance = parseFloat(document.getElementById('distance').value) || 15;
+            const between = parseFloat(document.getElementById('between').value) || 2.5;
+            
+            const panel = {
+                type: 'panel',
+                length: distance * 8, // Масштаб для отображения
+                realLength: distance,
+                id: Date.now()
+            };
+            
+            project.elements.push(panel);
+            project.panelCount++;
+            project.totalLength += distance;
+            
+            // Добавляем столб
+            const pole = {
+                type: 'pole',
+                id: Date.now() + 1
+            };
+            project.elements.push(pole);
+            project.poleCount++;
+            
+            drawScene();
+            console.log('Dodano odcinek:', distance + 'm');
+        }
+        
+        function addPole() {
+            const pole = {
+                type: 'pole',
+                id: Date.now()
+            };
+            project.elements.push(pole);
+            project.poleCount++;
+            drawScene();
+            console.log('Dodano słupek');
+        }
+        
+        function addPanel() {
+            const between = parseFloat(document.getElementById('between').value) || 2.5;
+            const panel = {
+                type: 'panel',
+                length: between * 40,
+                realLength: between,
+                id: Date.now()
+            };
+            project.elements.push(panel);
+            project.panelCount++;
+            project.totalLength += between;
+            drawScene();
+            console.log('Dodano panel');
+        }
+        
+        function addGate() {
+            const gate = {
+                type: 'gate',
+                id: Date.now()
+            };
+            project.elements.push(gate);
+            project.gateCount++;
+            project.totalLength += 4.0;
+            drawScene();
+            console.log('Dodano bramę');
+        }
+        
+        function addWicket() {
+            const wicket = {
+                type: 'wicket',
+                id: Date.now()
+            };
+            project.elements.push(wicket);
+            project.wicketCount++;
+            project.totalLength += 1.5;
+            drawScene();
+            console.log('Dodano furtkę');
+        }
+        
+        // Функции управления
+        function saveProject() {
+            const projectData = {
+                ...project,
+                timestamp: new Date().toISOString(),
+                version: '1.0',
+                system: 'Joniec'
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `projekt-joniec-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Projekt został zapisany!');
+        }
+        
+        function clearProject() {
+            if (confirm('Czy na pewno chcesz usunąć wszystkie elementy?')) {
+                project = {
+                    elements: [],
+                    totalLength: 0,
+                    poleCount: 0,
+                    panelCount: 0,
+                    gateCount: 0,
+                    wicketCount: 0,
+                    totalCost: 0
+                };
+                drawScene();
+                console.log('Projekt wyczyszczony');
+            }
+        }
+        
+        function resetProject() {
+            if (confirm('Czy na pewno chcesz zresetować projekt?')) {
+                document.getElementById('distance').value = 15;
+                document.getElementById('between').value = 2.52;
+                document.getElementById('angle').value = 0;
+                clearProject();
+            }
+        }
+        
+        function closeProject() {
+            if (confirm('Czy na pewno chcesz zamknąć projekt?')) {
+                console.log('Zamykanie projektu...');
+            }
+        }
+        
+        function toggle2D3D() {
+            is3DMode = !is3DMode;
+            const button = document.querySelector('.row-switcher button');
+            button.textContent = is3DMode ? '3D' : '2D/3D';
+            console.log('Przełączono na:', is3DMode ? '3D' : '2D');
+        }
+        
+        function toggleDayNight() {
+            isDayMode = !isDayMode;
+            const handler = document.querySelector('.button-switch-handler');
+            if (isDayMode) {
+                handler.style.transform = 'translateX(0px)';
+                document.body.style.filter = 'none';
+            } else {
+                handler.style.transform = 'translateX(30px)';
+                document.body.style.filter = 'brightness(0.7) contrast(1.2)';
+            }
+            console.log('Tryb:', isDayMode ? 'Dzień' : 'Noc');
+        }
+        
+        function showPricing() {
+            const totalPoles = project.poleCount;
+            const totalPanels = project.panelCount;
+            const totalGates = project.gateCount;
+            const totalWickets = project.wicketCount;
+            const totalLength = project.totalLength;
+            
+            let pricing = '💰 WYCENA PROJEKTU JONIEC:\n\n';
+            
+            if (totalPoles > 0) pricing += `🏗️ Słupki: ${totalPoles} szt.\n`;
+            if (totalPanels > 0) pricing += `🧱 Panele: ${totalPanels} szt.\n`;
+            if (totalGates > 0) pricing += `🚪 Bramy: ${totalGates} szt.\n`;
+            if (totalWickets > 0) pricing += `🚶 Furtki: ${totalWickets} szt.\n`;
+            
+            pricing += `\n📏 Długość całkowita: ${totalLength.toFixed(1)}m`;
+            pricing += `\n\n📞 Skontaktuj się z nami po szczegółową wycenę!`;
+            
+            alert(pricing);
+        }
+        
+        function takeScreenshot() {
+            console.log('Robienie zrzutu ekranu...');
+            // Funkcjonalność screenshota
+        }
+        
+        function loadBackgroundImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    console.log('Załadowano tło:', input.files[0].name);
+                    // Funkcjonalność ładowania tła
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        function openGraphicsSettings() {
+            console.log('Otwieranie ustawień grafiki...');
+        }
+        
+        function changeView() {
+            console.log('Zmiana widoku...');
+        }
+        
+        // Инициализация при загрузке
+        window.addEventListener('load', function() {
+            // Небольшая задержка, чтобы дать время webpack загрузиться
+            setTimeout(init, 500);
+        });
+    </script>
+
+    <div id="wt-sky-root"></div>
+</body>
+</html>
+

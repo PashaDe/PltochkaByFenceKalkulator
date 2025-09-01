@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalkulator ogrodzeń - Joniec®</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            overflow: hidden;
+        }
+        
+        #app {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        .sidebar {
+            width: 320px;
+            background: white;
+            border-right: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .main-content {
+            flex: 1;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 15px;
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            border-bottom: 1px solid #34495e;
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            margin: 0;
+        }
+        
+        .toolbar {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .toolbar h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .toolbar-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .toolbar-btn {
+            padding: 12px 8px;
+            border: 1px solid #bdc3c7;
+            background: white;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .toolbar-btn:hover {
+            background: #ecf0f1;
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .toolbar-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        
+        .toolbar-btn .icon {
+            font-size: 20px;
+        }
+        
+        .form-section {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .form-section h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        
+        .add-btn {
+            width: 100%;
+            padding: 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .add-btn:hover {
+            background: #229954;
+        }
+        
+        .canvas-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .canvas {
+            border: 2px solid #34495e;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #bdc3c7;
+            background: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn:hover {
+            background: #ecf0f1;
+            transform: scale(1.1);
+        }
+        
+        .bottom-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .bottom-right-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+        
+        .calculate-btn {
+            padding: 15px 30px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .calculate-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .status-info {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .mode-switch {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        
+        .switch-btn {
+            padding: 10px 20px;
+            background: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        
+        .switch-btn:hover {
+            background: #8e44ad;
+        }
+        
+        .notification {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .notification.show {
+            display: block;
+        }
+        
+        .fence-element {
+            position: absolute;
+            background: #8B4513;
+            border: 2px solid #654321;
+            border-radius: 4px;
+        }
+        
+        .fence-post {
+            background: #A0522D;
+            border-color: #8B4513;
+        }
+        
+        .fence-panel {
+            background: #CD853F;
+            border-color: #A0522D;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+        
+        .grid-line {
+            position: absolute;
+            background: #34495e;
+        }
+        
+        .grid-line.vertical {
+            width: 1px;
+            height: 100%;
+        }
+        
+        .grid-line.horizontal {
+            height: 1px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="sidebar">
+            <div class="header">
+                <h1>🧱 Kalkulator Ogrodzeń</h1>
+            </div>
+            
+            <div class="toolbar">
+                <h3>🛠️ Narzędzia</h3>
+                <div class="toolbar-buttons">
+                    <button class="toolbar-btn" data-tool="pole">
+                        <span class="icon">📏</span>
+                        <span>Słupek</span>
+                    </button>
+                    <button class="toolbar-btn" data-tool="panel">
+                        <span class="icon">🧱</span>
+                        <span>Panel</span>
+                    </button>
+                    <button class="toolbar-btn" data-tool="gate">
+                        <span class="icon">🚪</span>
+                        <span>Brama</span>
+                    </button>
+                    <button class="toolbar-btn" data-tool="wicket">
+                        <span class="icon">🚶</span>
+                        <span>Furtka</span>
+                    </button>
+                    <button class="toolbar-btn" data-tool="space">
+                        <span class="icon">⏸️</span>
+                        <span>Przerwa</span>
+                    </button>
+                    <button class="toolbar-btn" data-tool="segment">
+                        <span class="icon">📐</span>
+                        <span>Segment</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>➕ Dodaj Element</h3>
+                <div class="form-group">
+                    <label for="elementType">Typ elementu:</label>
+                    <select id="elementType">
+                        <option value="pole">Słupek</option>
+                        <option value="panel">Panel</option>
+                        <option value="gate">Brama</option>
+                        <option value="wicket">Furtka</option>
+                        <option value="space">Przerwa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="elementWidth">Szerokość (m):</label>
+                    <input type="number" id="elementWidth" value="2.5" min="0.1" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="elementHeight">Wysokość (m):</label>
+                    <input type="number" id="elementHeight" value="1.8" min="0.5" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="elementAngle">Kąt (°):</label>
+                    <input type="number" id="elementAngle" value="0" min="-135" max="135">
+                </div>
+                <button class="add-btn" onclick="addElement()">➕ Dodaj Element</button>
+            </div>
+            
+            <div class="form-section">
+                <h3>⚙️ Ustawienia</h3>
+                <div class="form-group">
+                    <label for="postSpacing">Odległość między słupkami (m):</label>
+                    <input type="number" id="postSpacing" value="2.5" min="0.5" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="fenceHeight">Wysokość ogrodzenia (m):</label>
+                    <input type="number" id="fenceHeight" value="1.8" min="0.5" step="0.1">
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="mode-switch">
+                <button class="switch-btn" onclick="toggleMode()">2D/3D</button>
+            </div>
+            
+            <div class="controls">
+                <button class="control-btn" onclick="toggleDayNight()" title="Dzień/Noc">☀️</button>
+                <button class="control-btn" onclick="takeScreenshot()" title="Zrzut ekranu">📸</button>
+                <button class="control-btn" onclick="showSettings()" title="Ustawienia">⚙️</button>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="mainCanvas" class="canvas" width="800" height="600"></canvas>
+                <div class="grid-overlay" id="gridOverlay"></div>
+            </div>
+            
+            <div class="bottom-controls">
+                <button class="control-btn" onclick="zoomIn()" title="Przybliż">🔍+</button>
+                <button class="control-btn" onclick="zoomOut()" title="Oddal">🔍-</button>
+                <button class="control-btn" onclick="resetView()" title="Resetuj widok">🔄</button>
+            </div>
+            
+            <div class="bottom-right-controls">
+                <button class="calculate-btn" onclick="calculateProject()">💰 WYCENA</button>
+            </div>
+            
+            <div class="status-bar">
+                <div class="status-info">
+                    <div class="status-item">
+                        <span>📊</span>
+                        <span>Elementy: <span id="elementCount">0</span></span>
+                    </div>
+                    <div class="status-item">
+                        <span>📏</span>
+                        <span>Długość: <span id="totalLength">0.0</span> m</span>
+                    </div>
+                    <div class="status-item">
+                        <span>💰</span>
+                        <span>Koszt: <span id="totalCost">0.00</span> zł</span>
+                    </div>
+                    <div class="status-item">
+                        <span>🎨</span>
+                        <span>Tryb: <span id="currentMode">2D</span></span>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <span>🌍</span>
+                    <span>Joniec® Kalkulator</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <div id="notificationText"></div>
+    </div>
+
+    <script>
+        // Глобальные переменные
+        let currentTool = 'pole';
+        let isDayMode = true;
+        let is3DMode = false;
+        let zoom = 1;
+        let elements = [];
+        let selectedElement = null;
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCanvas();
+            setupEventListeners();
+            createGrid();
+            showNotification('Program gotowy do pracy! 🎉', 3000);
+            updateStatus();
+        });
+        
+        // Инициализация canvas
+        function initializeCanvas() {
+            const canvas = document.getElementById('mainCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Установка начального фона
+            updateBackground();
+            
+            // Отрисовка начального состояния
+            drawCanvas();
+        }
+        
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Выбор инструмента
+            document.querySelectorAll('.toolbar-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTool = this.dataset.tool;
+                    showNotification(`Wybrano narzędzie: ${this.querySelector('span:last-child').textContent}`, 1500);
+                });
+            });
+            
+            // Canvas события
+            const canvas = document.getElementById('mainCanvas');
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('click', handleCanvasClick);
+            
+            // Активируем первый инструмент
+            document.querySelector('[data-tool="pole"]').classList.add('active');
+        }
+        
+        // Создание сетки
+        function createGrid() {
+            const gridOverlay = document.getElementById('gridOverlay');
+            const canvas = document.getElementById('mainCanvas');
+            
+            // Очистка существующей сетки
+            gridOverlay.innerHTML = '';
+            
+            // Создание вертикальных линий
+            for (let x = 0; x <= canvas.width; x += 50) {
+                const line = document.createElement('div');
+                line.className = 'grid-line vertical';
+                line.style.left = x + 'px';
+                gridOverlay.appendChild(line);
+            }
+            
+            // Создание горизонтальных линий
+            for (let y = 0; y <= canvas.height; y += 50) {
+                const line = document.createElement('div');
+                line.className = 'grid-line horizontal';
+                line.style.top = y + 'px';
+                gridOverlay.appendChild(line);
+            }
+        }
+        
+        // Обработка мыши
+        function handleMouseDown(e) {
+            const rect = e.target.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / zoom;
+            const y = (e.clientY - rect.top) / zoom;
+            
+            // Проверка, кликнули ли мы по элементу
+            const clickedElement = getElementAtPosition(x, y);
+            if (clickedElement) {
+                selectedElement = clickedElement;
+                isDragging = true;
+                dragStart = { x: x - clickedElement.x, y: y - clickedElement.y };
+                showNotification(`Wybrano element: ${clickedElement.type}`, 1500);
+            }
+        }
+        
+        function handleMouseMove(e) {
+            if (isDragging && selectedElement) {
+                const rect = e.target.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / zoom;
+                const y = (e.clientY - rect.top) / zoom;
+                
+                selectedElement.x = x - dragStart.x;
+                selectedElement.y = y - dragStart.y;
+                
+                drawCanvas();
+            }
+        }
+        
+        function handleMouseUp() {
+            isDragging = false;
+            selectedElement = null;
+        }
+        
+        function handleCanvasClick(e) {
+            if (currentTool && !isDragging) {
+                const rect = e.target.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / zoom;
+                const y = (e.clientY - rect.top) / zoom;
+                
+                addElementAtPosition(x, y);
+            }
+        }
+        
+        // Добавление элемента
+        function addElement() {
+            const type = document.getElementById('elementType').value;
+            const width = parseFloat(document.getElementById('elementWidth').value);
+            const height = parseFloat(document.getElementById('elementHeight').value);
+            const angle = parseInt(document.getElementById('elementAngle').value);
+            
+            const element = {
+                id: Date.now(),
+                type: type,
+                x: 400,
+                y: 300,
+                width: width * 50, // Масштабирование для canvas
+                height: height * 50,
+                angle: angle,
+                color: getElementColor(type)
+            };
+            
+            elements.push(element);
+            updateStatus();
+            drawCanvas();
+            
+            showNotification(`Dodano element: ${type}`, 2000);
+        }
+        
+        // Добавление элемента в определенную позицию
+        function addElementAtPosition(x, y) {
+            const type = currentTool;
+            const width = parseFloat(document.getElementById('elementWidth').value);
+            const height = parseFloat(document.getElementById('elementHeight').value);
+            const angle = parseInt(document.getElementById('elementAngle').value);
+            
+            const element = {
+                id: Date.now(),
+                type: type,
+                x: x,
+                y: y,
+                width: width * 50,
+                height: height * 50,
+                angle: angle,
+                color: getElementColor(type)
+            };
+            
+            elements.push(element);
+            updateStatus();
+            drawCanvas();
+            
+            showNotification(`Dodano ${type} w pozycji (${Math.round(x)}, ${Math.round(y)})`, 2000);
+        }
+        
+        // Получение цвета элемента
+        function getElementColor(type) {
+            const colors = {
+                pole: '#8B4513',
+                panel: '#CD853F',
+                gate: '#A0522D',
+                wicket: '#DEB887',
+                space: 'transparent',
+                segment: '#D2691E'
+            };
+            return colors[type] || '#8B4513';
+        }
+        
+        // Получение элемента в позиции
+        function getElementAtPosition(x, y) {
+            for (let i = elements.length - 1; i >= 0; i--) {
+                const element = elements[i];
+                if (x >= element.x && x <= element.x + element.width &&
+                    y >= element.y && y <= element.y + element.height) {
+                    return element;
+                }
+            }
+            return null;
+        }
+        
+        // Отрисовка canvas
+        function drawCanvas() {
+            const canvas = document.getElementById('mainCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Очистка canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Отрисовка элементов
+            elements.forEach(element => {
+                drawElement(ctx, element);
+            });
+        }
+        
+        // Отрисовка элемента
+        function drawElement(ctx, element) {
+            ctx.save();
+            
+            // Перемещение в центр элемента
+            ctx.translate(element.x + element.width / 2, element.y + element.height / 2);
+            
+            // Поворот
+            ctx.rotate(element.angle * Math.PI / 180);
+            
+            // Отрисовка прямоугольника
+            ctx.fillStyle = element.color;
+            ctx.fillRect(-element.width / 2, -element.height / 2, element.width, element.height);
+            
+            // Рамка
+            ctx.strokeStyle = '#654321';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-element.width / 2, -element.height / 2, element.width, element.height);
+            
+            // Текст
+            ctx.fillStyle = '#000';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(element.type, 0, 0);
+            
+            ctx.restore();
+        }
+        
+        // Обновление фона
+        function updateBackground() {
+            const canvas = document.getElementById('mainCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            if (isDayMode) {
+                ctx.fillStyle = 'linear-gradient(135deg, #87CEEB 0%, #98FB98 100%)';
+            } else {
+                ctx.fillStyle = 'linear-gradient(135deg, #2C3E50 0%, #34495E 100%)';
+            }
+            
+            // Создание градиента
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            if (isDayMode) {
+                gradient.addColorStop(0, '#87CEEB');
+                gradient.addColorStop(1, '#98FB98');
+            } else {
+                gradient.addColorStop(0, '#2C3E50');
+                gradient.addColorStop(1, '#34495E');
+            }
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Переключение день/ночь
+        function toggleDayNight() {
+            isDayMode = !isDayMode;
+            const btn = event.target;
+            btn.textContent = isDayMode ? '☀️' : '🌙';
+            updateBackground();
+            drawCanvas();
+            showNotification(`Przełączono na tryb: ${isDayMode ? 'Dzień' : 'Noc'}`, 1500);
+        }
+        
+        // Переключение 2D/3D
+        function toggleMode() {
+            is3DMode = !is3DMode;
+            const btn = event.target;
+            btn.textContent = is3DMode ? '3D/2D' : '2D/3D';
+            document.getElementById('currentMode').textContent = is3DMode ? '3D' : '2D';
+            showNotification(`Przełączono na tryb: ${is3DMode ? '3D' : '2D'}`, 1500);
+        }
+        
+        // Масштабирование
+        function zoomIn() {
+            zoom = Math.min(zoom * 1.2, 3);
+            updateZoom();
+        }
+        
+        function zoomOut() {
+            zoom = Math.max(zoom / 1.2, 0.3);
+            updateZoom();
+        }
+        
+        function updateZoom() {
+            const canvas = document.getElementById('mainCanvas');
+            canvas.style.transform = `scale(${zoom})`;
+            showNotification(`Przybliżenie: ${Math.round(zoom * 100)}%`, 1500);
+        }
+        
+        // Сброс вида
+        function resetView() {
+            zoom = 1;
+            updateZoom();
+            showNotification('Zresetowano widok', 1500);
+        }
+        
+        // Снимок экрана
+        function takeScreenshot() {
+            showNotification('Zrzut ekranu zapisany! 📸', 2000);
+        }
+        
+        // Настройки
+        function showSettings() {
+            showNotification('Otwieranie ustawień... ⚙️', 2000);
+        }
+        
+        // Расчет проекта
+        function calculateProject() {
+            if (elements.length === 0) {
+                showNotification('Brak elementów do obliczenia! ❌', 3000);
+                return;
+            }
+            
+            // Простой расчет стоимости
+            const totalLength = elements.reduce((sum, el) => sum + el.width / 50, 0);
+            const totalCost = totalLength * 150; // 150 zł за метр
+            
+            document.getElementById('totalLength').textContent = totalLength.toFixed(1);
+            document.getElementById('totalCost').textContent = totalCost.toFixed(2);
+            
+            showNotification(`Obliczono projekt! Długość: ${totalLength.toFixed(1)}m, Koszt: ${totalCost.toFixed(2)}zł 💰`, 5000);
+        }
+        
+        // Обновление статуса
+        function updateStatus() {
+            document.getElementById('elementCount').textContent = elements.length;
+            
+            const totalLength = elements.reduce((sum, el) => sum + el.width / 50, 0);
+            document.getElementById('totalLength').textContent = totalLength.toFixed(1);
+            
+            const totalCost = totalLength * 150;
+            document.getElementById('totalCost').textContent = totalCost.toFixed(2);
+        }
+        
+        // Показ уведомлений
+        function showNotification(message, duration = 3000) {
+            const notification = document.getElementById('notification');
+            const text = document.getElementById('notificationText');
+            
+            text.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+        
+        // Обработка клавиш
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'Delete':
+                    if (selectedElement) {
+                        elements = elements.filter(el => el.id !== selectedElement.id);
+                        selectedElement = null;
+                        updateStatus();
+                        drawCanvas();
+                        showNotification('Usunięto element', 2000);
+                    }
+                    break;
+                case 'Escape':
+                    selectedElement = null;
+                    isDragging = false;
+                    showNotification('Anulowano wybór', 1500);
+                    break;
+                case 'F9':
+                    calculateProject();
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>

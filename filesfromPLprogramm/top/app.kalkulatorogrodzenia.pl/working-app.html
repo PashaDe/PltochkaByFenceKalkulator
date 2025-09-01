@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Kalkulator ogrodzeń - Joniec &reg;</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="user-scalable=no">
+        <meta name="theme-color" content="#ffffff">
+        <link href="assets/img/favicon.png" rel="shortcut icon">
+        <link href="app/prod/build/static/css/main.3189d60c.chunk.css" rel="stylesheet">
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Open Sans', sans-serif;
+                background: #f5f5f5;
+            }
+            #app {
+                width: 100%;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+            }
+            .loading {
+                font-size: 18px;
+                color: #666;
+                margin-bottom: 20px;
+            }
+            .error {
+                color: #ff4757;
+                margin-top: 20px;
+                padding: 15px;
+                background: #ffe0e0;
+                border-radius: 8px;
+                max-width: 500px;
+                text-align: center;
+            }
+            .success {
+                color: #2ed573;
+                margin-top: 20px;
+                padding: 15px;
+                background: #e0ffe0;
+                border-radius: 8px;
+                max-width: 500px;
+                text-align: center;
+            }
+            .debug-info {
+                background: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 15px;
+                margin-top: 20px;
+                max-width: 500px;
+                font-family: monospace;
+                font-size: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <noscript>Włącz JavaScript, aby uruchomić aplikację.</noscript>
+        <div id="app">
+            <div class="loading">Ładowanie aplikacji...</div>
+            <div class="debug-info">
+                <strong>Debug Info:</strong><br>
+                <span id="debug-status">Sprawdzanie plików...</span>
+            </div>
+        </div>
+        
+        <!-- Загружаем основные чанки -->
+        <script src="app/prod/build/static/js/2.4b869d18.chunk.js"></script>
+        <script src="app/prod/build/static/js/main.f98c1ea0.chunk.js"></script>
+        
+        <script>
+            // Функция для отладки
+            function updateDebugInfo(message) {
+                const debugElement = document.getElementById('debug-status');
+                if (debugElement) {
+                    debugElement.textContent = message;
+                }
+                console.log(message);
+            }
+            
+            // Проверяем загрузку файлов
+            function checkFiles() {
+                updateDebugInfo('Sprawdzanie plików...');
+                
+                // Проверяем CSS
+                const cssLink = document.querySelector('link[href*="main.3189d60c.chunk.css"]');
+                if (cssLink) {
+                    updateDebugInfo('CSS załadowany ✓');
+                } else {
+                    updateDebugInfo('CSS NIE załadowany ✗');
+                }
+                
+                // Проверяем JavaScript
+                const scripts = document.querySelectorAll('script[src*="chunk.js"]');
+                updateDebugInfo(`Znaleziono ${scripts.length} plików JS`);
+                
+                // Проверяем глобальные переменные
+                setTimeout(() => {
+                    if (typeof window.webpackJsonp !== 'undefined') {
+                        updateDebugInfo('Webpack loader znaleziony ✓');
+                    } else {
+                        updateDebugInfo('Webpack loader NIE znaleziony ✗');
+                    }
+                    
+                    if (typeof React !== 'undefined') {
+                        updateDebugInfo('React załadowany ✓');
+                    } else {
+                        updateDebugInfo('React NIE załadowany ✗');
+                    }
+                }, 1000);
+            }
+            
+            // Инициализация приложения
+            window.addEventListener('load', function() {
+                updateDebugInfo('Strona załadowana, sprawdzanie...');
+                
+                // Проверяем файлы
+                checkFiles();
+                
+                // Ждем загрузки скриптов
+                setTimeout(() => {
+                    try {
+                        // Пытаемся найти React приложение
+                        if (typeof React !== 'undefined' && typeof ReactDOM !== 'undefined') {
+                            updateDebugInfo('React znaleziony! Próba uruchomienia...');
+                            
+                            // Пытаемся создать простой React элемент
+                            const rootElement = document.getElementById('app');
+                            if (rootElement) {
+                                const reactElement = React.createElement('div', {
+                                    style: {
+                                        padding: '20px',
+                                        background: '#fff',
+                                        borderRadius: '8px',
+                                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+                                    }
+                                }, 'Aplikacja React działa! 🎉');
+                                
+                                ReactDOM.render(reactElement, rootElement);
+                                updateDebugInfo('Aplikacja React uruchomiona pomyślnie! ✓');
+                            }
+                        } else {
+                            updateDebugInfo('React nie został załadowany');
+                            
+                            // Показываем ошибку
+                            const appElement = document.getElementById('app');
+                            if (appElement) {
+                                appElement.innerHTML = `
+                                    <div class="error">
+                                        <h3>Błąd ładowania aplikacji</h3>
+                                        <p>React nie został załadowany. Sprawdź:</p>
+                                        <ul style="text-align: left; display: inline-block;">
+                                            <li>Czy pliki JavaScript są dostępne</li>
+                                            <li>Czy nie ma błędów w konsoli</li>
+                                            <li>Czy ścieżki do plików są poprawne</li>
+                                        </ul>
+                                        <br>
+                                        <p><strong>Użyj demo.html jako alternatywy</strong></p>
+                                    </div>
+                                `;
+                            }
+                        }
+                    } catch (error) {
+                        updateDebugInfo(`Błąd: ${error.message}`);
+                        console.error('Błąd podczas uruchamiania aplikacji:', error);
+                    }
+                }, 2000);
+            });
+            
+            // Obsługa ошибок
+            window.addEventListener('error', function(event) {
+                updateDebugInfo(`Błąd JavaScript: ${event.message}`);
+                console.error('JavaScript error:', event);
+            });
+            
+            // Sprawdzanie co 2 sekundy
+            setInterval(() => {
+                const debugElement = document.getElementById('debug-status');
+                if (debugElement && debugElement.textContent.includes('Sprawdzanie')) {
+                    checkFiles();
+                }
+            }, 2000);
+        </script>
+    </body>
+</html>

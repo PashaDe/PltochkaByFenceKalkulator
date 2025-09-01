@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html class="">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalkulator ogrodzeń - Joniec®</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="user-scalable=no">
+    <meta name="theme-color" content="#ffffff">
+    <link href="assets/img/favicon.png" rel="shortcut icon">
+    <link href="app/prod/build/static/css/main.3189d60c.chunk.css" rel="stylesheet">
+    <style>
+        .reset-css {
+            border: 0;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            width: auto;
+            height: auto;
+            font-size: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            text-align: left;
+            vertical-align: middle;
+        }
+        
+        /* Основные стили для приложения */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background: #f5f5f5;
+        }
+        
+        #app {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        #templates-project-template {
+            width: 100%;
+            height: 100%;
+        }
+        
+        #container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #application {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .col-panel {
+            width: 300px;
+            background: #fff;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .col-workspace {
+            flex: 1;
+            background: #f0f0f0;
+            position: relative;
+        }
+        
+        .menu {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .menu button {
+            margin: 2px;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .menu button:hover {
+            background: #f0f0f0;
+        }
+        
+        .toolbar-main {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .toolbar-main div {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .toolbar-main button {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ccc;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .toolbar-main button:hover {
+            background: #f0f0f0;
+        }
+        
+        .toolbar-project {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .toolbar-project button {
+            width: 40px;
+            height: 40px;
+            margin: 2px;
+            border: 1px solid #ccc;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .title h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+        }
+        
+        .options-group {
+            margin-bottom: 20px;
+        }
+        
+        .options-group h3 {
+            margin: 10px 0 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .options-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+        
+        .options-group small {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .content button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .content button:hover {
+            background: #0056b3;
+        }
+        
+        .row-switcher {
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .row-switcher button {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .row-switcher button:hover {
+            background: #218838;
+        }
+        
+        .row-workspace {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .canvas {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .canvas canvas {
+            border: 1px solid #ddd;
+            background: #fff;
+        }
+        
+        .top-right {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .top-right button {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ccc;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .bottom-left {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .bottom-left button {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ccc;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .bottom-right {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+        
+        .bottom-right button {
+            padding: 10px 20px;
+            background: #ffc107;
+            color: #333;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .bottom-right button:hover {
+            background: #e0a800;
+        }
+        
+        .day-night {
+            position: relative;
+        }
+        
+        .button-switch {
+            width: 60px;
+            height: 30px;
+            background: #ddd;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .button-switch-handler {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+        }
+        
+        .button-switch-type-day,
+        .button-switch-type-night {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .button-switch-type-day {
+            left: 8px;
+        }
+        
+        .button-switch-type-night {
+            right: 8px;
+        }
+        
+        .communique {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .communique.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <noscript>Włącz JavaScript, aby uruchomić aplikację.</noscript>
+    <div id="app">
+        <div id="templates-project-template">
+            <div id="container">
+                <div id="application" class="grid window-none">
+                    <div class="col-panel">
+                        <section>
+                            <div class="row-panel">
+                                <section class="menu">
+                                    <button title="Zapisz projekt (F9)">Zapisz</button>
+                                    <button title="Usuń wszystkie słupki i przęsła">Wyczyść</button>
+                                    <button title="Zmień system i zacznij projekt od nowa">Zresetuj</button>
+                                    <button title="Wróć do listy projektów">Zamknij</button>
+                                </section>
+                                <section class="toolbar-main">
+                                    <div>
+                                        <button title="Dodaj słupek" aria-label="Dodaj słupek" class="type-pole">
+                                            <span>📏</span>
+                                        </button>
+                                        <button title="Dodaj mur" aria-label="Dodaj mur" class="type-curtain">
+                                            <span>🧱</span>
+                                        </button>
+                                        <button title="Dodaj furtkę" aria-label="Dodaj furtkę" class="type-wicket">
+                                            <span>🚪</span>
+                                        </button>
+                                        <button title="Dodaj bramę" aria-label="Dodaj bramę" class="type-gate">
+                                            <span>🏛️</span>
+                                        </button>
+                                        <button title="Dodaj przerwę" aria-label="Dodaj przerwę" class="type-space">
+                                            <span>⏸️</span>
+                                        </button>
+                                        <button title="Dodaj odcinek" aria-label="Dodaj odcinek" class="type-episode">
+                                            <span>📐</span>
+                                        </button>
+                                    </div>
+                                </section>
+                                <section class="toolbar-project">
+                                    <button title="Wybierz kolor bloczków" aria-label="Wybierz kolor bloczków" class="type-colors-blocks">
+                                        <span>🎨</span>
+                                    </button>
+                                    <button title="Wybierz kolor daszków" aria-label="Wybierz kolor daszków" class="type-colors-peaks">
+                                        <span>🏠</span>
+                                    </button>
+                                    <button title="Konfiguruj kombo" aria-label="Konfiguruj kombo" class="type-combo">
+                                        <span>⚙️</span>
+                                    </button>
+                                    <button title="Konfiguruj wypełnienia" aria-label="Konfiguruj wypełnienia" class="type-fencings">
+                                        <span>🔧</span>
+                                    </button>
+                                    <button title="Rozłóż słupki równomiernie" aria-label="Rozłóż słupki równomiernie" class="type-average">
+                                        <span>📊</span>
+                                    </button>
+                                    <button title="Blokada przenoszenia elementów" aria-label="Blokada przenoszenia elementów" class="type-move enabled">
+                                        <span>🔒</span>
+                                    </button>
+                                    <button title="Migruj projekt do innego systemu" aria-label="Migruj projekt do innego systemu" class="type-migration">
+                                        <span>🔄</span>
+                                    </button>
+                                    <button title="Autozapis" aria-label="Autozapis" class="type-autosave">
+                                        <span>💾</span>
+                                    </button>
+                                    <button title="Ustawienia projektu" aria-label="Ustawienia projektu" class="type-settings">
+                                        <span>⚙️</span>
+                                    </button>
+                                </section>
+                                <div class="content">
+                                    <div class="title">
+                                        <h2>Dodaj odcinek</h2>
+                                    </div>
+                                    <div class="options-group">
+                                        <h3>Długość</h3>
+                                        <input type="number" min="0" step="0.01" name="distance" value="15.000"> <small>m</small>
+                                        <h3>Odległość między słupkami</h3>
+                                        <input type="number" min="0" step="0.01" name="between" value="2.52"> <small>m</small>
+                                        <h3>Kąt</h3>
+                                        <input type="number" min="-135" max="135" step="1" name="angle" value="0"> <small>°</small>
+                                    </div>
+                                    <button>Dodaj</button>
+                                </div>
+                            </div>
+                            <div class="row-switcher">
+                                <button>2D/3D</button>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-workspace">
+                        <section>
+                            <div class="row-workspace">
+                                <div class="canvas">
+                                    <canvas width="866" height="600" style="border: 1px solid #ddd; background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);"></canvas>
+                                </div>
+                                <div class="top-right">
+                                    <div class="day-night p-1">
+                                        <button title="Dzień / noc" aria-label="Dzień / noc" class="button-switch">
+                                            <span class="button-switch-handler" style="top: 0%;"></span>
+                                            <span class="button-switch-type-day">☀️</span>
+                                            <span class="button-switch-type-night">🌙</span>
+                                        </button>
+                                    </div>
+                                    <div class="photo-background">
+                                        <button title="Przymierz wizualizację na zdjęciu działki" aria-label="Przymierz wizualizację na zdjęciu działki" class="button-image button-image-type-environment" style="opacity: 1; order: 1;">
+                                            📷
+                                        </button>
+                                        <div class="content">
+                                            <input type="file" style="display: none;">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button title="Zrób print-screen" aria-label="Zrób print-screen" class="button-image button-image-type-screenshot" style="opacity: 1; order: 1;">
+                                            📸
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="bottom-left">
+                                    <button title="Ustawienia grafiki" aria-label="Ustawienia grafiki" class="button-image button-image-type-details" style="opacity: 1; order: 2;">
+                                        ⚙️
+                                    </button>
+                                    <button title="Zmień widok" aria-label="Zmień widok" class="button-image button-image-type-window" style="opacity: 1; order: 1;">
+                                        🔍
+                                    </button>
+                                </div>
+                                <div class="bottom-right">
+                                    <div class="p-2">
+                                        <button class="button-text">Wycena</button>
+                                    </div>
+                                </div>
+                                <div class="communique">
+                                    <div>Program gotowy do pracy!</div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Простая демонстрация функциональности
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Приложение загружено!');
+            
+            // Показать сообщение о готовности
+            const communique = document.querySelector('.communique');
+            communique.classList.add('show');
+            setTimeout(() => {
+                communique.classList.remove('show');
+            }, 3000);
+            
+            // Переключение день/ночь
+            const dayNightButton = document.querySelector('.button-switch');
+            const handler = document.querySelector('.button-switch-handler');
+            let isDay = true;
+            
+            dayNightButton.addEventListener('click', function() {
+                isDay = !isDay;
+                if (isDay) {
+                    handler.style.left = '2px';
+                    document.querySelector('.canvas canvas').style.background = 'linear-gradient(135deg, #87CEEB 0%, #98FB98 100%)';
+                } else {
+                    handler.style.left = '32px';
+                    document.querySelector('.canvas canvas').style.background = 'linear-gradient(135deg, #2C3E50 0%, #34495E 100%)';
+                }
+            });
+            
+            // Добавление элементов
+            const addButton = document.querySelector('.content button');
+            addButton.addEventListener('click', function() {
+                const distance = document.querySelector('input[name="distance"]').value;
+                const between = document.querySelector('input[name="between"]').value;
+                const angle = document.querySelector('input[name="angle"]').value;
+                
+                alert(`Добавлен отрезок:\nДлина: ${distance} м\nРасстояние между столбами: ${between} м\nУгол: ${angle}°`);
+            });
+            
+            // Кнопки панели инструментов
+            const toolbarButtons = document.querySelectorAll('.toolbar-main button, .toolbar-project button');
+            toolbarButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const title = this.getAttribute('title');
+                    console.log('Нажата кнопка:', title);
+                });
+            });
+            
+            // Переключение 2D/3D
+            const switchButton = document.querySelector('.row-switcher button');
+            let is3D = false;
+            switchButton.addEventListener('click', function() {
+                is3D = !is3D;
+                this.textContent = is3D ? '3D/2D' : '2D/3D';
+                console.log('Режим:', is3D ? '3D' : '2D');
+            });
+        });
+    </script>
+</body>
+</html>

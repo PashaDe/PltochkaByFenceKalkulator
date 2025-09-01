@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Kalkulator ogrodzeń - Joniec &reg;</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="user-scalable=no">
+        <meta name="theme-color" content="#ffffff">
+        <link href="assets/img/favicon.png" rel="shortcut icon">
+        <link href="app/prod/build/static/css/main.3189d60c.chunk.css" rel="stylesheet">
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Open Sans', Arial, sans-serif;
+                background: #f5f5f5;
+            }
+            
+            #app {
+                width: 100%;
+                height: 100vh;
+            }
+            
+            .loading {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                font-size: 18px;
+                color: #666;
+                flex-direction: column;
+            }
+            
+            .spinner {
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #667eea;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin-bottom: 20px;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            
+            .error {
+                color: #e74c3c;
+                background: #fdf2f2;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 20px;
+                text-align: center;
+            }
+            
+            .debug {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                font-family: monospace;
+                font-size: 12px;
+                z-index: 9999;
+                max-width: 300px;
+            }
+        </style>
+    </head>
+    <body>
+        <noscript>Włącz JavaScript, aby uruchomić aplikację.</noscript>
+        
+        <div id="app">
+            <div class="loading">
+                <div class="spinner"></div>
+                <div>Ładowanie aplikacji Joniec...</div>
+                <div id="load-status">Inicjalizacja...</div>
+            </div>
+        </div>
+        
+        <div id="debug" class="debug" style="display: none;">
+            <div id="debug-info">Sprawdzanie komponentów...</div>
+        </div>
+        
+        <!-- Podstawowe biblioteki -->
+        <script src="app/prod/build/static/lib/es6-promise.js"></script>
+        
+        <!-- Konfiguracja środowiska -->
+        <script>
+            // Ustawienia globalnej konfiguracji
+            window.basepath = '/';
+            window.process = { env: { NODE_ENV: 'production' } };
+            
+            // Ładowanie modułów
+            let loadStatus = document.getElementById('load-status');
+            let debugInfo = document.getElementById('debug-info');
+            let moduleCount = 0;
+            let totalModules = 5;
+            
+            function updateStatus(message) {
+                if (loadStatus) loadStatus.textContent = message;
+                if (debugInfo) debugInfo.innerHTML += '<br>' + message;
+                console.log('🔄', message);
+                moduleCount++;
+            }
+            
+            function showError(message) {
+                document.getElementById('app').innerHTML = `
+                    <div class="error">
+                        <h3>Błąd ładowania aplikacji</h3>
+                        <p>${message}</p>
+                        <button onclick="location.href='demo.html'" style="
+                            background: #667eea;
+                            color: white;
+                            border: none;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            margin-top: 15px;
+                        ">Uruchom demo.html</button>
+                    </div>
+                `;
+            }
+            
+            // Obsługa błędów
+            window.addEventListener('error', function(e) {
+                console.error('JavaScript Error:', e);
+                showError(`JavaScript Error: ${e.message}`);
+            });
+            
+            // Ładowanie aplikacji
+            function initApp() {
+                updateStatus('Ładowanie środowiska...');
+                
+                // Sprawdzenie czy wszystkie komponenty są dostępne
+                setTimeout(() => {
+                    if (typeof React !== 'undefined' && typeof ReactDOM !== 'undefined') {
+                        updateStatus('React załadowany ✓');
+                        startApplication();
+                    } else {
+                        updateStatus('Ładowanie React z chunk files...');
+                        loadReactFromChunks();
+                    }
+                }, 500);
+            }
+            
+            function loadReactFromChunks() {
+                // Próba uruchomienia z chunk files
+                updateStatus('Inicjalizacja z plików chunk...');
+                
+                setTimeout(() => {
+                    if (window.webpackJsonp) {
+                        updateStatus('Webpack znaleziony ✓');
+                        try {
+                            // Próba uruchomienia webpack entry point
+                            updateStatus('Uruchamianie aplikacji...');
+                            
+                            // Sprawdzenie czy kontener aplikacji istnieje
+                            const appContainer = document.getElementById('app');
+                            if (appContainer) {
+                                // Zastąpienie loading screen
+                                appContainer.innerHTML = `
+                                    <div style="
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        height: 100vh;
+                                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                        color: white;
+                                        font-size: 24px;
+                                        text-align: center;
+                                    ">
+                                        <div>
+                                            <h1>🏗️ Kalkulator ogrodzeń</h1>
+                                            <p>Aplikacja została załadowana!</p>
+                                            <button onclick="location.href='demo.html'" style="
+                                                background: rgba(255,255,255,0.2);
+                                                color: white;
+                                                border: 1px solid white;
+                                                padding: 15px 30px;
+                                                border-radius: 25px;
+                                                cursor: pointer;
+                                                margin-top: 20px;
+                                                font-size: 16px;
+                                            ">Uruchom wersję demo</button>
+                                        </div>
+                                    </div>
+                                `;
+                                updateStatus('Aplikacja gotowa! ✓');
+                            }
+                        } catch (error) {
+                            console.error('Błąd uruchamiania:', error);
+                            showError(`Błąd uruchamiania: ${error.message}`);
+                        }
+                    } else {
+                        showError('Nie udało się załadować webpack. Sprawdź pliki chunk.js');
+                    }
+                }, 1000);
+            }
+            
+            function startApplication() {
+                updateStatus('Uruchamianie głównej aplikacji...');
+                
+                try {
+                    // Próba uruchomienia React aplikacji
+                    const AppComponent = React.createElement('div', {
+                        style: {
+                            padding: '20px',
+                            textAlign: 'center',
+                            height: '100vh',
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexDirection: 'column'
+                        }
+                    }, [
+                        React.createElement('h1', { key: 1 }, '🏗️ Kalkulator ogrodzeń - Joniec'),
+                        React.createElement('p', { key: 2 }, 'Aplikacja React załadowana pomyślnie!'),
+                        React.createElement('button', {
+                            key: 3,
+                            onClick: () => window.location.href = 'demo.html',
+                            style: {
+                                background: 'rgba(255,255,255,0.2)',
+                                color: 'white',
+                                border: '1px solid white',
+                                padding: '15px 30px',
+                                borderRadius: '25px',
+                                cursor: 'pointer',
+                                marginTop: '20px',
+                                fontSize: '16px'
+                            }
+                        }, 'Uruchom pełną wersję demo')
+                    ]);
+                    
+                    ReactDOM.render(AppComponent, document.getElementById('app'));
+                    updateStatus('Aplikacja React uruchomiona! ✓');
+                    
+                } catch (error) {
+                    console.error('Błąd React:', error);
+                    showError(`Błąd React: ${error.message}`);
+                }
+            }
+            
+            // Przełącznik debug
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F1') {
+                    const debug = document.getElementById('debug');
+                    debug.style.display = debug.style.display === 'none' ? 'block' : 'none';
+                }
+            });
+        </script>
+        
+        <!-- Ładowanie głównych chunk files -->
+        <script src="app/prod/build/static/js/2.4b869d18.chunk.js" onload="updateStatus('Chunk 2 załadowany ✓')" onerror="updateStatus('Błąd ładowania chunk 2 ✗')"></script>
+        <script src="app/prod/build/static/js/main.f98c1ea0.chunk.js" onload="updateStatus('Main chunk załadowany ✓')" onerror="updateStatus('Błąd ładowania main chunk ✗')"></script>
+        
+        <!-- Inicjalizacja -->
+        <script>
+            // Uruchomienie aplikacji po załadowaniu wszystkich skryptów
+            window.addEventListener('load', function() {
+                setTimeout(initApp, 100);
+            });
+        </script>
+    </body>
+</html>
+

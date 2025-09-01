@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator ogrodzeń - Joniec &reg;</title>
+    <link href="assets/img/favicon.png" rel="shortcut icon">
+    
+    <!-- Подключаем оригинальные стили -->
+    <link href="app/prod/build/static/css/main.3189d60c.chunk.css" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+        
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Левая панель - точная копия оригинала */
+        .left-panel {
+            width: 300px;
+            background: #ffffff;
+            border-right: 1px solid #e1e5e9;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .panel-header {
+            padding: 20px;
+            border-bottom: 1px solid #e1e5e9;
+            background: #f8f9fa;
+        }
+        
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 8px;
+        }
+        
+        .btn:hover {
+            background: #2563eb;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        /* Правая область - 3D сцена */
+        .main-content {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 30%, #8FBC8F 100%);
+            overflow: hidden;
+        }
+        
+        .canvas-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        #canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        /* Нижняя панель информации */
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+        }
+        
+        .info-item {
+            text-align: center;
+        }
+        
+        .info-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 4px;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        /* Элементы управления видом */
+        .view-controls {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .view-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: #6b7280;
+        }
+        
+        .view-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .view-btn:hover:not(.active) {
+            background: #f3f4f6;
+        }
+        
+        /* Кнопка расчета стоимости */
+        .pricing-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            transition: all 0.2s;
+        }
+        
+        .pricing-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        /* Логотип Joniec на земле */
+        .ground-logo {
+            position: absolute;
+            bottom: 50%;
+            left: 30%;
+            font-size: 48px;
+            color: rgba(239, 68, 68, 0.3);
+            font-weight: bold;
+            letter-spacing: 8px;
+            transform: rotate(-15deg);
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        /* Флаги */
+        .flag {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            background: #ef4444;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            writing-mode: vertical-lr;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .flag-1 { top: 30%; left: 20%; }
+        .flag-2 { top: 35%; left: 35%; }
+        .flag-3 { top: 32%; left: 50%; }
+        
+        /* Облака */
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+            opacity: 0.7;
+        }
+        
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+        }
+        
+        .cloud-1 {
+            width: 80px;
+            height: 40px;
+            top: 15%;
+            left: 20%;
+            animation: float 20s infinite linear;
+        }
+        
+        .cloud-1::before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 10px;
+        }
+        
+        .cloud-1::after {
+            width: 60px;
+            height: 35px;
+            top: -15px;
+            right: 10px;
+        }
+        
+        .cloud-2 {
+            width: 100px;
+            height: 50px;
+            top: 25%;
+            right: 30%;
+            animation: float 25s infinite linear reverse;
+        }
+        
+        .cloud-2::before {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            left: 15px;
+        }
+        
+        .cloud-2::after {
+            width: 70px;
+            height: 40px;
+            top: -20px;
+            right: 15px;
+        }
+        
+        @keyframes float {
+            0% { transform: translateX(-50px); }
+            100% { transform: translateX(calc(100vw + 50px)); }
+        }
+        
+        /* Сетка */
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 70% 70%;
+            pointer-events: none;
+        }
+        
+        /* Элементы ограждения */
+        .fence-element {
+            position: absolute;
+            transition: all 0.3s ease;
+        }
+        
+        .fence-post {
+            width: 12px;
+            height: 60px;
+            background: linear-gradient(145deg, #8B4513, #A0522D);
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .fence-panel {
+            height: 40px;
+            background: linear-gradient(145deg, #696969, #808080);
+            border: 1px solid #555;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .fence-gate {
+            height: 60px;
+            background: linear-gradient(145deg, #2F4F4F, #556B2F);
+            border: 2px solid #2F4F4F;
+            border-radius: 4px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+        
+        .fence-wicket {
+            height: 45px;
+            background: linear-gradient(145deg, #8B0000, #B22222);
+            border: 2px solid #8B0000;
+            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                width: 100%;
+                height: 300px;
+            }
+            
+            .main-content {
+                flex: 1;
+            }
+            
+            .info-panel {
+                grid-template-columns: repeat(2, 1fr);
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+                padding: 12px;
+            }
+            
+            .pricing-btn {
+                bottom: 120px;
+                right: 10px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Левая панель управления -->
+        <div class="left-panel">
+            <div class="panel-header">
+                <div class="panel-title">Dodaj odcinek</div>
+            </div>
+            
+            <div class="panel-content">
+                <div class="form-group">
+                    <label class="form-label" for="length">Długość</label>
+                    <input type="number" id="length" class="form-input" value="15.000" step="0.1" min="1" max="100">
+                    <small style="color: #6b7280; font-size: 12px;">m</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="poleDistance">Odległość między słupkami</label>
+                    <input type="number" id="poleDistance" class="form-input" value="2.52" step="0.1" min="1" max="10">
+                    <small style="color: #6b7280; font-size: 12px;">m</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="angle">Kąt</label>
+                    <input type="number" id="angle" class="form-input" value="0" step="1" min="-90" max="90">
+                    <small style="color: #6b7280; font-size: 12px;">°</small>
+                </div>
+                
+                <button class="btn" onclick="addSegment()">Dodaj</button>
+                
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #e1e5e9;">
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px; color: #374151; font-size: 14px;">Narzędzia</h4>
+                    <button class="btn btn-secondary" onclick="addPole()">Dodaj słup</button>
+                    <button class="btn btn-secondary" onclick="addPanel()">Dodaj panel</button>
+                    <button class="btn btn-secondary" onclick="addGate()">Dodaj bramę</button>
+                    <button class="btn btn-secondary" onclick="addWicket()">Dodaj furtkę</button>
+                </div>
+                
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #e1e5e9;">
+                
+                <div>
+                    <h4 style="margin-bottom: 15px; color: #374151; font-size: 14px;">Projekt</h4>
+                    <button class="btn" onclick="saveProject()">Zapisz</button>
+                    <button class="btn btn-secondary" onclick="clearProject()">Wyczyść</button>
+                    <button class="btn btn-secondary" onclick="resetProject()">Zresetuj</button>
+                    <button class="btn btn-danger" onclick="closeProject()">Zamknij</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Основная область с 3D сценой -->
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                
+                <!-- Сетка -->
+                <div class="grid-overlay"></div>
+                
+                <!-- Облака -->
+                <div class="cloud cloud-1"></div>
+                <div class="cloud cloud-2"></div>
+                
+                <!-- Флаги Joniec -->
+                <div class="flag flag-1">JONIEC</div>
+                <div class="flag flag-2">JONIEC</div>
+                <div class="flag flag-3">JONIEC</div>
+                
+                <!-- Логотип на земле -->
+                <div class="ground-logo">JONIEC</div>
+                
+                <!-- Информационная панель -->
+                <div class="info-panel">
+                    <div class="info-item">
+                        <div class="info-value" id="totalLength">0.0</div>
+                        <div class="info-label">Długość całkowita (m)</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value" id="poleCount">0</div>
+                        <div class="info-label">Liczba słupów</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value" id="panelCount">0</div>
+                        <div class="info-label">Liczba paneli</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value" id="gateCount">0</div>
+                        <div class="info-label">Bramy</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value" id="wicketCount">0</div>
+                        <div class="info-label">Furtki</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value" id="totalCost">0</div>
+                        <div class="info-label">Koszt całkowity (zł)</div>
+                    </div>
+                </div>
+                
+                <!-- Элементы управления видом -->
+                <div class="view-controls">
+                    <button class="view-btn active" onclick="setView('2D')">2D</button>
+                    <button class="view-btn" onclick="setView('3D')">3D</button>
+                </div>
+                
+                <!-- Кнопка расчета стоимости -->
+                <button class="pricing-btn" onclick="calculatePricing()">Wycena</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Переменные приложения
+        let canvas, ctx;
+        let currentView = '2D';
+        let project = {
+            elements: [],
+            totalLength: 0,
+            poleCount: 0,
+            panelCount: 0,
+            gateCount: 0,
+            wicketCount: 0,
+            totalCost: 0
+        };
+        
+        // Цены на материалы (в злотых)
+        const prices = {
+            pole: 180,
+            panel: 120,
+            gate: 1200,
+            wicket: 350
+        };
+        
+        // Инициализация
+        function init() {
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            drawScene();
+            updateInfo();
+        }
+        
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            drawScene();
+        }
+        
+        // Рисование сцены
+        function drawScene() {
+            if (!ctx) return;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Очистка
+            ctx.clearRect(0, 0, width, height);
+            
+            // Небо (градиент уже есть в CSS)
+            
+            // Земля/пол
+            const groundY = height * 0.75;
+            
+            // Логотипы Joniec на полу
+            drawGroundLogos(groundY);
+            
+            // Элементы ограждения
+            drawFenceElements(groundY);
+            
+            // Столбы фундамента
+            drawFoundationPosts(groundY);
+        }
+        
+        function drawGroundLogos(groundY) {
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.15)';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            
+            for (let x = 100; x < canvas.width; x += 200) {
+                for (let y = groundY + 30; y < canvas.height; y += 120) {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(-0.2);
+                    ctx.fillText('JONIEC', 0, 0);
+                    ctx.restore();
+                }
+            }
+        }
+        
+        function drawFoundationPosts(groundY) {
+            // Рисуем базовые столбы фундамента
+            const posts = [
+                { x: canvas.width * 0.2, width: 40 },
+                { x: canvas.width * 0.4, width: 40 },
+                { x: canvas.width * 0.6, width: 40 },
+                { x: canvas.width * 0.8, width: 40 }
+            ];
+            
+            posts.forEach(post => {
+                // Фундамент
+                ctx.fillStyle = '#bdc3c7';
+                ctx.fillRect(post.x - post.width/2, groundY, post.width, 30);
+                
+                // Столб
+                ctx.fillStyle = '#95a5a6';
+                ctx.fillRect(post.x - 8, groundY - 60, 16, 60);
+                
+                // Тень
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                ctx.fillRect(post.x + 8, groundY - 50, 4, 50);
+            });
+        }
+        
+        function drawFenceElements(groundY) {
+            let currentX = 50;
+            
+            project.elements.forEach((element, index) => {
+                const x = currentX;
+                const y = groundY;
+                
+                switch (element.type) {
+                    case 'pole':
+                        drawPole(x, y);
+                        currentX += 3;
+                        break;
+                    case 'panel':
+                        drawPanel(x, y, element.length || 100);
+                        currentX += element.length || 100;
+                        break;
+                    case 'gate':
+                        drawGate(x, y);
+                        currentX += 80;
+                        break;
+                    case 'wicket':
+                        drawWicket(x, y);
+                        currentX += 50;
+                        break;
+                }
+            });
+        }
+        
+        function drawPole(x, y) {
+            // Столб
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(x - 6, y - 70, 12, 70);
+            
+            // Блик
+            ctx.fillStyle = '#A0522D';
+            ctx.fillRect(x - 6, y - 70, 4, 70);
+            
+            // Тень
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.fillRect(x + 6, y - 60, 3, 60);
+        }
+        
+        function drawPanel(x, y, length) {
+            // Панель
+            ctx.fillStyle = '#696969';
+            ctx.fillRect(x, y - 50, length, 50);
+            
+            // Рамка
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y - 50, length, 50);
+            
+            // Деления
+            for (let i = 1; i < 4; i++) {
+                ctx.beginPath();
+                ctx.moveTo(x + (length * i) / 4, y - 50);
+                ctx.lineTo(x + (length * i) / 4, y);
+                ctx.stroke();
+            }
+            
+            // Тень
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(x + 2, y - 48, length, 3);
+        }
+        
+        function drawGate(x, y) {
+            // Ворота
+            ctx.fillStyle = '#2F4F4F';
+            ctx.fillRect(x, y - 70, 80, 70);
+            
+            // Рамка
+            ctx.strokeStyle = '#1a2f2f';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y - 70, 80, 70);
+            
+            // Разделение створок
+            ctx.beginPath();
+            ctx.moveTo(x + 40, y - 70);
+            ctx.lineTo(x + 40, y);
+            ctx.stroke();
+            
+            // Ручки
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(x + 20, y - 35, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x + 60, y - 35, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawWicket(x, y) {
+            // Калитка
+            ctx.fillStyle = '#8B0000';
+            ctx.fillRect(x, y - 55, 50, 55);
+            
+            // Рамка
+            ctx.strokeStyle = '#660000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y - 55, 50, 55);
+            
+            // Ручка
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(x + 40, y - 28, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Замок
+            ctx.fillStyle = '#333';
+            ctx.fillRect(x + 35, y - 20, 8, 10);
+        }
+        
+        // Функции добавления элементов
+        function addSegment() {
+            const length = parseFloat(document.getElementById('length').value) || 15;
+            const scaledLength = length * 6; // Масштаб для отображения
+            
+            const panel = {
+                type: 'panel',
+                length: scaledLength,
+                realLength: length,
+                id: Date.now()
+            };
+            
+            project.elements.push(panel);
+            project.panelCount++;
+            project.totalLength += length;
+            
+            // Добавляем столб в конце
+            const pole = {
+                type: 'pole',
+                id: Date.now() + 1
+            };
+            project.elements.push(pole);
+            project.poleCount++;
+            
+            updateInfo();
+            drawScene();
+        }
+        
+        function addPole() {
+            const pole = {
+                type: 'pole',
+                id: Date.now()
+            };
+            project.elements.push(pole);
+            project.poleCount++;
+            updateInfo();
+            drawScene();
+        }
+        
+        function addPanel() {
+            const length = parseFloat(document.getElementById('poleDistance').value) || 2.5;
+            const scaledLength = length * 40;
+            
+            const panel = {
+                type: 'panel',
+                length: scaledLength,
+                realLength: length,
+                id: Date.now()
+            };
+            project.elements.push(panel);
+            project.panelCount++;
+            project.totalLength += length;
+            updateInfo();
+            drawScene();
+        }
+        
+        function addGate() {
+            const gate = {
+                type: 'gate',
+                id: Date.now()
+            };
+            project.elements.push(gate);
+            project.gateCount++;
+            project.totalLength += 4.0;
+            updateInfo();
+            drawScene();
+        }
+        
+        function addWicket() {
+            const wicket = {
+                type: 'wicket',
+                id: Date.now()
+            };
+            project.elements.push(wicket);
+            project.wicketCount++;
+            project.totalLength += 1.5;
+            updateInfo();
+            drawScene();
+        }
+        
+        function updateInfo() {
+            document.getElementById('totalLength').textContent = project.totalLength.toFixed(1);
+            document.getElementById('poleCount').textContent = project.poleCount;
+            document.getElementById('panelCount').textContent = project.panelCount;
+            document.getElementById('gateCount').textContent = project.gateCount;
+            document.getElementById('wicketCount').textContent = project.wicketCount;
+            
+            // Расчет стоимости
+            project.totalCost = 
+                project.poleCount * prices.pole + 
+                project.panelCount * prices.panel + 
+                project.gateCount * prices.gate + 
+                project.wicketCount * prices.wicket;
+            
+            document.getElementById('totalCost').textContent = project.totalCost.toLocaleString();
+        }
+        
+        function saveProject() {
+            const projectData = {
+                ...project,
+                timestamp: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `projekt-ogrodzenia-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Projekt został zapisany!');
+        }
+        
+        function clearProject() {
+            if (confirm('Czy na pewno chcesz wyczyścić projekt?')) {
+                project = {
+                    elements: [],
+                    totalLength: 0,
+                    poleCount: 0,
+                    panelCount: 0,
+                    gateCount: 0,
+                    wicketCount: 0,
+                    totalCost: 0
+                };
+                updateInfo();
+                drawScene();
+            }
+        }
+        
+        function resetProject() {
+            if (confirm('Czy na pewno chcesz zresetować projekt?')) {
+                document.getElementById('length').value = 15;
+                document.getElementById('poleDistance').value = 2.52;
+                document.getElementById('angle').value = 0;
+                clearProject();
+            }
+        }
+        
+        function closeProject() {
+            if (confirm('Czy na pewno chcesz zamknąć projekt?')) {
+                window.close();
+            }
+        }
+        
+        function setView(view) {
+            currentView = view;
+            
+            // Обновляем кнопки
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if (view === '3D') {
+                alert('Widok 3D - funkcja rozszerzenia!');
+            }
+        }
+        
+        function calculatePricing() {
+            let details = '💰 SZCZEGÓŁOWA WYCENA PROJEKTU:\n\n';
+            
+            if (project.poleCount > 0) {
+                details += `🏗️ Słupy: ${project.poleCount} × ${prices.pole}zł = ${project.poleCount * prices.pole}zł\n`;
+            }
+            if (project.panelCount > 0) {
+                details += `🧱 Panele: ${project.panelCount} × ${prices.panel}zł = ${project.panelCount * prices.panel}zł\n`;
+            }
+            if (project.gateCount > 0) {
+                details += `🚪 Bramy: ${project.gateCount} × ${prices.gate}zł = ${project.gateCount * prices.gate}zł\n`;
+            }
+            if (project.wicketCount > 0) {
+                details += `🚶 Furtki: ${project.wicketCount} × ${prices.wicket}zł = ${project.wicketCount * prices.wicket}zł\n`;
+            }
+            
+            details += `\n📏 Długość całkowita: ${project.totalLength.toFixed(1)}m`;
+            details += `\n💵 KOSZT CAŁKOWITY: ${project.totalCost.toLocaleString()}zł`;
+            details += `\n\n📝 Uwaga: Ceny są orientacyjne i mogą się różnić w zależności od wybranego systemu ogrodzenia.`;
+            
+            alert(details);
+        }
+        
+        // Inicjalizacja
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+
