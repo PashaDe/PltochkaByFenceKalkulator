@@ -1,0 +1,49 @@
+#header {
+	padding: 2.5em 0;
+	
+	.grid {
+		margin: -1em; justify-content: space-between; align-items: center;
+		
+		> div { padding: 1em; }
+		
+		.logo { width: 50%; max-width: 264px; }
+		
+		.user-menu {
+			@include flex; @include flex-wrap; position: relative; font-size: 1.25em;
+			
+			> a {
+				display: block; padding: 0.75em 1em; color: #fff; background: $themeColorRed;
+				
+				&:hover { background: $color; }
+			}
+			
+			.more {
+				.arrow {
+					width: 2.5em; height: 100%; position: relative; background: $color; cursor: pointer;
+					
+					&:after { content: ''; @include fill-absolute; background: url('#{$img}icons/arrow-down.svg') center no-repeat; background-size: 35%; @include transition(all, 0.2s, ease); }
+				}
+				
+				> ul {
+					display: none; min-width: 100%; position: absolute; right: 0; top: 100%; font-size: 0.9em; background: $color;
+					
+					li {
+						a {
+							display: block; padding: 1em 1em; color: #fff; text-align: center;
+							
+							&:hover { color: $themeColorRed; }
+						}
+					}
+				}
+				
+				&:hover {
+					.arrow {
+						&:after { @include transform(rotate(-180deg)); }
+					}
+					
+					> ul { display: block; }
+				}
+			}
+		}
+	}
+}

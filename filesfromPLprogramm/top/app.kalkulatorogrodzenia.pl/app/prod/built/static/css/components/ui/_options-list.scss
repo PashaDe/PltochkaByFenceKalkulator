@@ -1,0 +1,14 @@
+.options-list {
+	@include flex; @include flex-wrap; margin: 0; padding: 0;
+	
+	li {
+		display: block; width: 100%; margin: 0 0 0.25em; padding: 0; font-size: 0.9em; list-style: none;
+		
+		> button { color: $colorLight; text-align: left; }
+	}
+	
+	&.inrow-2 { li { width: 50%; } }
+	&.inrow-3 { li { width: 33.3333%; } }
+	&.inrow-4 { li { width: 25%; } }
+	&.inrow-5 { li { width: 20%; } }
+}

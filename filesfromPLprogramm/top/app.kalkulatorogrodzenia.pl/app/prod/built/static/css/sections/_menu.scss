@@ -1,0 +1,9 @@
+section.menu {
+	@include flex; @include flex-wrap; justify-content: flex-start; background: #444;
+	
+	button {
+		padding: 0.5em 0.95em; color: #d0d0d0;
+		
+		&:hover { color: #fff; background: #555; }
+	}
+}

@@ -1,0 +1,69 @@
+.projects {
+	width: 100%; margin-top: 2em; border: solid 1px #c0c0c0; border-collapse: collapse; border-spacing: 0;
+	
+	tr {
+		> th, > td { padding: 0.6em 1em; vertical-align: top; border: solid 1px #d0d0d0; }
+		
+		> th {
+			font-weight: 700; color: #fff; text-align: center; background: $themeColorRed;
+		}
+		
+		> td {
+			text-align: left; background: #f7f7f7;
+			
+			&.date {
+				width: 164px; text-align: center;
+				
+				.small { margin-top: 0.5em; font-size: 0.8em; color: #999; }
+			}
+			
+			&.project {
+				.title {
+					.no-title { font-style: italic; }
+				}
+				
+				.description { margin-top: 0.5em; color: #999; }
+			}
+			
+			&.system { text-align: center; white-space: nowrap; }
+			
+			&.options { width: 25px; text-align: center; }
+		}
+		
+		&:hover {
+			> td { background: #e7e7e7; }
+		}
+		
+		&:nth-child(2n) {
+			> td { background: #f0f0f0; }
+			
+			&:hover {
+				> td { background: #e0e0e0; }
+			}
+		}
+	}
+	
+	
+	@media screen and (max-width: 768px) {
+		tr {
+			.system { display: none; }
+		}
+	}
+	
+	
+	@media screen and (max-width: 480px) {
+		display: block;
+		
+		thead, tbody { display: block; }
+		
+		tr {
+			display: block; border: solid 1px #d0d0d0;
+			
+			> th, > td { display: block; width: 100% !important; margin: -1px -1px; text-align: left !important; border: none; }
+			
+			> th {
+				&.options { display: none; }
+			}
+		}
+	}
+}

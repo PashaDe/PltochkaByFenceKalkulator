@@ -1,0 +1,31 @@
+a, abbr, acronym, address, applet, article, aside, audio, b, big, blockquote, body, canvas, caption, center, cite, code, dd, del, details, dfn, div, dl, dt, em, embed, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, html, i, iframe, img, ins, kbd, label, legend, li, mark, menu, nav, object, ol, output, p, pre, q, ruby, s, samp, section, small, span, strike, strong, sub, summary, sup, table, tbody, td, tfoot, th, thead, time, tr, tt, u, ul, var, video { margin: 0; padding: 0; font: inherit; font-size: 100%; vertical-align: baseline; border: 0; outline: none; }
+ol, ul { list-style: none; }
+
+a { color: $color; text-decoration: none; }
+b, strong { font-weight: 700; }
+section { position: relative; }
+sup { position: relative; top: -0.6em; font-size: 0.6em; }
+td { vertical-align: middle; }
+
+button { padding: 0; background: none; border: none; cursor: pointer; }
+button, input[type="text"]:focus, input[type="password"]:focus, input[type="submit"]:focus, textarea:focus { outline: none; }
+button, textarea { font-family: $fontFamily; }
+textarea { overflow: auto; resize: none; }
+
+
+/* --- LAYOUT ---------------------------------- */
+
+#container {
+	overflow: hidden; width: 100%; min-height: 100vh; position: relative; margin: 0 auto; text-align: center;
+	
+	.wrapper {
+		width: 100%; position: relative; margin: 0 auto; text-align: left;
+		
+		&:before, &:after { content: ''; @include clearfix; }
+	}
+}
+
+
+/* --- GLOBAL ---------------------------------- */
+
+.cf { @include clearfix; }

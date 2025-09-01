@@ -1,0 +1,39 @@
+section.toolbar-project {
+	@include flex; @include flex-wrap; justify-content: center; border-bottom: solid 1px #e0e0e0;
+	
+	button {
+		width: 24px; height: 24px; position: relative; margin: 12px 5px; background-position: center; background-repeat: no-repeat; background-size: contain; opacity: 0.5;
+		
+		span { @include fill-absolute; background-position: center; background-repeat: no-repeat; background-size: contain; }
+		
+		&:hover {
+			opacity: 1;
+			
+			span { @include transform(rotate(90deg)); }
+		}
+		
+		&.type-colors-blocks { background-image: url('#{$img}icons/toolbar-project/colors-blocks.png'); }
+		&.type-colors-peaks { background-image: url('#{$img}icons/toolbar-project/colors-peaks.png'); }
+		&.type-combo { background-image: url('#{$img}icons/toolbar-project/combo.png'); }
+		&.type-fencings { background-image: url('#{$img}icons/toolbar-project/fencings.png'); }
+		&.type-average { background-image: url('#{$img}icons/toolbar-project/average.png'); }
+		
+		&.type-move {
+			background-image: url('#{$img}icons/toolbar-project/move-disabled.png');
+			
+			&.enabled { background-image: url('#{$img}icons/toolbar-project/move-enabled.png'); }
+		}
+		
+		&.type-migration { background-image: url('#{$img}icons/toolbar-project/migration.png'); }
+		
+		&.type-autosave {
+			background-image: url('#{$img}icons/toolbar-project/autosave-disabled.png');
+			
+			&.enabled { background-image: url('#{$img}icons/toolbar-project/autosave-enabled.png'); }
+		}
+		
+		&.type-settings span { background-image: url('#{$img}icons/toolbar-project/settings.png'); }
+		
+		&.type-colors-blocks span, &.type-colors-peaks span { width: 56%; height: 56%; top: auto; left: auto; right: 0; bottom: 10%; background-image: url('#{$img}icons/toolbar-project/colors-color.png'); }
+	}
+}

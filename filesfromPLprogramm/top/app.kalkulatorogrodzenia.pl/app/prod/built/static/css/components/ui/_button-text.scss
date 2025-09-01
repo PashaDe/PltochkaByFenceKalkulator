@@ -1,0 +1,5 @@
+.button-text {
+	padding: 0.25em 0.75em; font-weight: 700; font-size: 1.5em; color: #fff; background: $themeColorRed;
+	
+	&:hover { background: #000; }
+}

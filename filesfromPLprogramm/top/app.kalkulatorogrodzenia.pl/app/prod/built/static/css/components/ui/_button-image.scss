@@ -1,0 +1,19 @@
+.button-image {
+	width: 36px; height: 36px; position: relative; background-position: center; background-repeat: no-repeat; background-size: contain;
+	
+	&-type-details { width: 24px; height: 24px; margin-left: 3px; margin-bottom: 3px; background-image: url('#{$img}icons/button-image/details.png'); background-color: #fff; background-size: 50%; border: solid 1px #000; }
+	
+	&-type-environment { width: 48px; background-image: url('#{$img}icons/button-image/environment.png'); background-color: #f0f0f0; background-size: 25px; }
+	
+	&-type-screenshot { width: 48px; background-image: url('#{$img}icons/button-image/screenshot.png'); background-color: #f0f0f0; background-size: 32px; }
+	
+	&-type-window { width: 24px; height: 24px; margin-left: 4px; margin-bottom: 3px; background-image: url('#{$img}icons/button-image/window.png'); background-color: #fff; background-size: 70%; border: solid 1px #000; }
+	
+	&-type-pdf { background-image: url('#{$img}icons/button-image/pdf.png'); }
+	
+	&-type-xls { background-image: url('#{$img}icons/button-image/xls.png'); }
+	
+	&-type-ows { background-image: url('#{$img}icons/button-image/ows.png'); }
+	
+	&-type-order { background-image: url('#{$img}icons/button-image/order.png'); }
+}

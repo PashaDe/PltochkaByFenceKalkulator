@@ -1,0 +1,45 @@
+section.toolbar-main {
+	background: $themeColorGrey;
+	
+	> div {
+		@include flex; @include flex-wrap; justify-content: center;
+		
+		button {
+			width: 44px; height: 48px; position: relative;
+			
+			span { @include fill-absolute; background-position: center; background-repeat: no-repeat; background-size: auto 18px; opacity: 0.5; }
+			
+			&:before {
+				content: ''; width: 1px; height: 60%; position: absolute; top: 50%; left: 0; background: $themeColorGrey;
+				@include transform(translate(0%, -50%));
+			}
+			
+			&:after {
+				content: ''; width: 0; height: 4px; position: absolute; left: 50%; bottom: 0; background: $themeColorRed;
+				@include transform(translate(-50%, 0%));
+			}
+			
+			&:first-child {
+				&:before { display: none; }
+			}
+			
+			&:hover {
+				span { opacity: 1; }
+				
+				&:after { width: 65%; }
+			}
+			
+			&.type-pole span { background-image: url('#{$img}icons/toolbar-main/pole.png'); }
+			&.type-curtain span { background-image: url('#{$img}icons/toolbar-main/curtain.png'); }
+			&.type-gate span { background-image: url('#{$img}icons/toolbar-main/gate.png'); }
+			&.type-wicket span { background-image: url('#{$img}icons/toolbar-main/wicket.png'); }
+			&.type-space span { background-image: url('#{$img}icons/toolbar-main/space.png'); }
+			
+			&.type-episode {
+				width: 64px;
+				
+				span { background-image: url('#{$img}icons/toolbar-main/episode.png'); }
+			}
+		}
+	}
+}

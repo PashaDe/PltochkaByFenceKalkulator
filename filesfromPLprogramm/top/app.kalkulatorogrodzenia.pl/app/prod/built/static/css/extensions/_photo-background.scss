@@ -1,0 +1,7 @@
+.photo-background {
+	.content {
+		display: none; width: 300px; position: absolute; top: 100%; right: 0; background: #fff; border: solid 1px #000;
+		
+		input[type="file"] { display: none; }
+	}
+}

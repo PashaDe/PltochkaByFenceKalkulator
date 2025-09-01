@@ -1,0 +1,26 @@
+.plus-minus {
+	button {
+		display: block; position: absolute; top: 0.6em; padding: 6px; background: #fff; border: solid 1px $themeColorRed;
+		@include border-radius-circle;
+		
+		&:before { content: ''; display: block; width: 10px; height: 10px; background-position: center; background-repeat: no-repeat; background-size: contain; opacity: 0.5; }
+		
+		&.plus {
+			right: 0;
+			
+			&:before { background-image: url('#{$img}icons/plus.svg'); }
+		}
+		
+		&.minus {
+			right: 32px;
+			
+			&:before { background-image: url('#{$img}icons/minus.svg'); }
+		}
+		
+		&:hover {
+			&:before { opacity: 1; }
+		}
+	}
+	
+	p { margin: 0; font-weight: 300; font-size: 0.9em; color: $colorLight; }
+}

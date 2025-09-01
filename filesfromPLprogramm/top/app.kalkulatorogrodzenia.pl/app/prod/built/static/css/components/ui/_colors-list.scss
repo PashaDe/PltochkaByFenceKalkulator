@@ -1,0 +1,22 @@
+.colors-list {
+	@include flex; @include flex-wrap; margin: -5px; padding: 10px 0; justify-content: flex-start;
+	
+	> div {
+		width: 25%; position: relative; padding: 5px;
+		
+		button {
+			display: block; width: 100%; padding-top: 90%; background-position: center; background-repeat: no-repeat; background-size: cover; border: solid 2px #333;
+			
+			&:hover ~ .tooltip { opacity: 1; @include transform(translate(-50%, 0)); }
+		}
+		
+		.tooltip {
+			display: block; max-width: 110%; position: absolute; left: 50%; bottom: 100%; padding: 0.5em 0.65em; font-size: 0.75em; color: #fff; text-align: center; background: rgba(0, 0, 0, 0.7); opacity: 0; z-index: 1; pointer-events: none;
+			@include transform(translate(-50%, 1em)); @include transition(all, 0.3s, ease-out);
+		}
+		
+		&.active {
+			button { border: solid 2px $themeColorRed; }
+		}
+	}
+}

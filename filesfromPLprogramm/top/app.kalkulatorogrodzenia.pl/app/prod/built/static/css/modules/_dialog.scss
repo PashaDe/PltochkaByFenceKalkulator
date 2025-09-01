@@ -1,0 +1,25 @@
+.dialog-container {
+	@include fill-absolute; background: rgba(255, 255, 255, 0.8); z-index: 2;
+	
+	.dialog {
+		min-width: 360px; max-width: 50%; position: absolute; top: 50%; left: 50%; background: #fff;
+		@include border-radius(3px); @include box-shadow(3px, 3px, 1em, rgba(0, 0, 0, 0.2)); @include transform(translate(-50%, -50%));
+		
+		.dialog-content {
+			position: relative; padding: 2.5em;
+			
+			.content { text-align: center; }
+			
+			.buttons {
+				margin: 1.5em -1em -1em; text-align: right;
+				
+				button {
+					margin: 1em; padding: 0.5em 1em; color: #fff; cursor: pointer;
+					
+					&.button-confirm { background: $themeColorRed; }
+					&.button-decline { background: $colorLight; }
+				}
+			}
+		}
+	}
+}

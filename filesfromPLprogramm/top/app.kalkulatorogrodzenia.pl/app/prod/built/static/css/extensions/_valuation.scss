@@ -1,0 +1,76 @@
+.valuation-toolbar {
+	padding: 0.25em 0;
+	
+	button { margin-right: 0.25em; }
+}
+
+#result {
+	font-weight: 300; font-size: 0.9em;
+	
+	.br { margin-top: 0.25em; }
+	.light { color: #888; }
+	
+	.message {
+		width: 100%; margin: 0 0 1em; padding: 1em; background: rgba(255, 0, 0, 0.1); border: solid 1px rgba(255, 0, 0, 0.1);
+		
+		p { margin: 0.5em 0; }
+	}
+
+	table.result {
+		width: 100%; border: none; border-collapse: collapse; border-spacing: 0;
+		
+		tr {
+			th, td {
+				padding: 0.75em 0.75em;
+				
+				&.miniature {
+					width: 240px;
+					
+					img {
+						display: block; width: 100%; max-width: 100%; margin: 0 auto;
+						
+						&.small { width: 50%; }
+						
+						&.jpg { display: none; }
+					}
+				}
+				
+				&.name { text-align: left; }
+				
+				&.quantity { width: 15%; }
+			}
+			
+			th { font-size: 1.2em; color: #fff; background: $themeColorRed; }
+			td { background: #f7f7f7; }
+			
+			&:nth-child(2n+1) {
+				td { background: #f0f0f0; }
+			}
+			
+			&:hover {
+				td { background: #e0e0e0; }
+			}
+		}
+	}
+
+	table.summary {
+		width: 100%; border: none; border-collapse: collapse; border-spacing: 0;
+		
+		tr {
+			td {
+				width: 50%; padding: 36px 0 0; font-size: 18px; vertical-align: top;
+				
+				> div {
+					padding: 20px 0 0; border-top: solid 1px #d0d0d0;
+					
+					p { margin: 0.75rem 0 0; }
+					p.min { font-size: 0.9em; }
+					p.normal { font-size: 1.1em; }
+				}
+				
+				&.left { text-align: left; }
+				&.right { text-align: right; }
+			}
+		}
+	}
+}

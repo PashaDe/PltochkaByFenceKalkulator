@@ -1,0 +1,9 @@
+.box-loading {
+	padding: 4em;
+	
+	> div {
+		width: 100%; max-width: 128px; margin: 0 auto;
+		
+		&:after { content: ''; display: block; width: 100%; height: 0; padding-top: 100%; background: url('#{$img}loading.gif') center no-repeat; background-size: contain; }
+	}
+}

@@ -1,0 +1,13 @@
+.add-dimension {
+	display: block; position: absolute; padding: 4px; background: #fff; border: solid 1px #000; opacity: 0.8; z-index: 1;
+	@include border-radius-circle;
+	
+	&:before { content: ''; display: block; width: 8px; height: 8px; background: url('#{$img}icons/plus.svg') center no-repeat; background-size: contain; }
+	
+	&-top { top: 1em; left: 50%; @include transform(translate(-50%, 0%)); }
+	&-left { top: 50%; left: 1em; @include transform(translate(0%, -50%)); }
+	&-right { top: 50%; right: 1em; @include transform(translate(0%, -50%)); }
+	&-bottom { bottom: 1em; left: 50%; @include transform(translate(-50%, 0%)); }
+	
+	&:hover { opacity: 1; @include box-shadow(0, 0, 0.5em, rgba(255, 255, 255, 0.5)); }
+}

@@ -1,0 +1,37 @@
+.button-options {
+	width: 24px; height: 24px; position: relative; margin: 12px; background-position: center; background-repeat: no-repeat; background-size: contain; opacity: 0.5;
+	
+	span { @include fill-absolute; background-position: center; background-repeat: no-repeat; background-size: contain; }
+	
+	&:hover {
+		opacity: 1;
+		
+		span { @include transform(rotate(90deg)); }
+	}
+	
+	&-type-prev { background-image: url('#{$img}icons/button-options/prev.png'); border: solid 1px #000; @include border-radius-circle; }
+	
+	&-type-next { background-image: url('#{$img}icons/button-options/next.png'); border: solid 1px #000; @include border-radius-circle; }
+	
+	&-type-virtual {
+		background-image: url('#{$img}icons/button-options/virtual-disabled.png');
+		
+		&.enabled { background-image: url('#{$img}icons/button-options/virtual-enabled.png'); }
+	}
+	
+	&-type-polygon-break {
+		background-image: url('#{$img}icons/button-options/polygon-break-disabled.png');
+		
+		&.enabled { background-image: url('#{$img}icons/button-options/polygon-break-enabled.png'); }
+	}
+	
+	&-type-remove {
+		background-image: url('#{$img}icons/button-options/trash.png');
+		
+		span { background-image: url('#{$img}icons/button-options/trash-lid.png'); }
+		
+		&:hover {
+			span { top: -2px; @include transform(rotate(0)); }
+		}
+	}
+}
